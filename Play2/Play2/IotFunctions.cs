@@ -1,5 +1,4 @@
 ﻿using Iot.Device.DHTxx;
-using System.Device.Gpio;
 using UnitsNet;
 
 namespace Allotment
@@ -13,10 +12,6 @@ namespace Allotment
 
     public class IotFunctions
     {
-        private const int _doorPinOpen = 26;
-        private const int _doorPinClose = 19;
-        private readonly TimeSpan _doorActionTimeDelay = TimeSpan.FromSeconds(2);
-
         public async Task<bool> TryGetTempDetailsAsync(Action<TempDetails> tempDetailsFound)
         {
             using var dht = new Dht11(12);
@@ -38,35 +33,6 @@ namespace Allotment
             }
 
             return false;
-        }
-
-        public async Task OpenDoorsAsync()
-        {
-            using GpioController controller = new();
-            controller.OpenPin(_doorPinOpen, PinMode.Output);
-            try
-            {
-                controller.Write(_doorPinOpen, PinValue.High);
-                await Task.Delay((int)_doorActionTimeDelay.Milliseconds);
-            }
-            finally
-            {
-                controller.Write(_doorPinOpen, PinValue.Low);
-            }
-        }
-        public async Task CloseDoorsAsync()
-        {
-            using GpioController controller = new();
-            controller.OpenPin(_doorPinClose, PinMode.Output);
-            try
-            {
-                controller.Write(_doorPinClose, PinValue.High);
-                await Task.Delay((int)_doorActionTimeDelay.Milliseconds);
-            }
-            finally
-            {
-                controller.Write(_doorPinClose, PinValue.Low);
-            }
         }
     }
 }
