@@ -16,13 +16,20 @@ while (true)
     while (true)
     {
         Console.WriteLine("trying...");
-        var getIotResult = await iot.TryGetTempDetailsAsync(async tempDetails =>
+        var getIotSuccess = await iot.TryGetTempDetailsAsync(tempDetails =>
         {
             Console.WriteLine($"Temp={tempDetails.Temperature} Humidity={tempDetails.Humidity}");
-            await iot.OpenDoorsAsync();
-            await iot.CloseDoorsAsync();
         });
-        if (!getIotResult)
+        if (getIotSuccess)
+        {
+            Console.WriteLine("Opening doors...");
+            await iot.OpenDoorsAsync();
+            Console.WriteLine("Done!");
+            Console.WriteLine("Closing doors..");
+            await iot.CloseDoorsAsync();
+            Console.WriteLine("Done!");
+        }
+        else
         {
             Console.WriteLine("FAILED");
         };
