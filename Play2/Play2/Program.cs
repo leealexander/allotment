@@ -22,12 +22,8 @@ while (true)
         });
         if (getIotSuccess)
         {
-            Console.WriteLine("Opening doors...");
             await iot.OpenDoorsAsync();
-            Console.WriteLine("Done!");
-            Console.WriteLine("Closing doors..");
             await iot.CloseDoorsAsync();
-            Console.WriteLine("Done!");
         }
         else
         {

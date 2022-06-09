@@ -42,31 +42,31 @@ namespace Allotment
 
         public async Task OpenDoorsAsync()
         {
+            await DoorActionAsync(_doorPinOpen);
+        }
+        public async Task CloseDoorsAsync()
+        {
+            await DoorActionAsync(_doorPinClose);
+        }
+
+        private async Task DoorActionAsync(int pin)
+        {
+            Console.WriteLine($"Creating GPIO {pin}...");
             using GpioController controller = new();
             controller.OpenPin(_doorPinOpen, PinMode.Output);
+            Console.WriteLine($"Setting {pin} pin to ouput...");
             try
             {
+                Console.WriteLine($"{pin} to high...");
                 controller.Write(_doorPinOpen, PinValue.High);
                 await Task.Delay((int)_doorActionTimeDelay.Milliseconds);
             }
             finally
             {
                 controller.Write(_doorPinOpen, PinValue.Low);
+                Console.WriteLine($"{pin} to low...");
             }
-        }
-        public async Task CloseDoorsAsync()
-        {
-            using GpioController controller = new();
-            controller.OpenPin(_doorPinClose, PinMode.Output);
-            try
-            {
-                controller.Write(_doorPinClose, PinValue.High);
-                await Task.Delay((int)_doorActionTimeDelay.Milliseconds);
-            }
-            finally
-            {
-                controller.Write(_doorPinClose, PinValue.Low);
-            }
+            Console.WriteLine($"{pin} Done!");
         }
     }
 }
