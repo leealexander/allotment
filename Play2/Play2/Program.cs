@@ -16,9 +16,9 @@ while (true)
     while (true)
     {
         Console.WriteLine("trying...");
-        var getIotResult = await iot.TryGetTempDetailsAsync(x =>
+        var getIotResult = await iot.TryGetTempDetailsAsync(tempDetails =>
         {
-            Console.WriteLine("{Temp=x.Temperature} {Temp=x.Humidity}");
+            Console.WriteLine("Temp={tempDetails.Temperature} Humidity={tempDetails.Humidity}");
         });
         if (!getIotResult)
         {

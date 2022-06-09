@@ -19,8 +19,6 @@ namespace Allotment
             {
                 var tempSuccess = dht.TryReadTemperature(out var temperature);
                 var humiditySuccess = dht.TryReadHumidity(out var humidity);
-                var tempText = tempSuccess ? temperature.ToString() : "FAILED";
-                var humidityText = humiditySuccess ? humidity.ToString() : "FAILED";
 
                 await Task.Delay(100);
                 if (tempSuccess && humiditySuccess)
