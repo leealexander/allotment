@@ -53,17 +53,17 @@ namespace Allotment
         {
             Console.WriteLine($"Creating GPIO {pin}...");
             using GpioController controller = new();
-            controller.OpenPin(_doorPinOpen, PinMode.Output);
+            controller.OpenPin(pin, PinMode.Output);
             Console.WriteLine($"Setting {pin} pin to ouput...");
             try
             {
                 Console.WriteLine($"{pin} to high...");
-                controller.Write(_doorPinOpen, PinValue.High);
-                await Task.Delay((int)_doorActionTimeDelay.Milliseconds);
+                controller.Write(pin, PinValue.High);
+                await Task.Delay((int)_doorActionTimeDelay.TotalMilliseconds);
             }
             finally
             {
-                controller.Write(_doorPinOpen, PinValue.Low);
+                controller.Write(pin, PinValue.Low);
                 Console.WriteLine($"{pin} to low...");
             }
             Console.WriteLine($"{pin} Done!");
