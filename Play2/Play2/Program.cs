@@ -29,6 +29,6 @@ while (true)
         {
             Console.WriteLine("FAILED");
         };
-        await Task.Delay(1000);
+        await Task.Delay(3000);
     }
 }
