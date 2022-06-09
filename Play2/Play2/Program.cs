@@ -2,7 +2,7 @@
 using Iot.Device.DHTxx;
 
 Console.WriteLine("Starting temp reader...");
-using var dht = new Dht11(32);
+using var dht = new Dht11(12);
 while (true)
 {
     var tempSuccess = dht.TryReadTemperature(out var temperature);
