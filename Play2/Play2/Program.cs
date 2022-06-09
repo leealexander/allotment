@@ -2,11 +2,10 @@
 
 using Allotment;
 
-Console.WriteLine("Starting temp reader, press any key to start...");
-Console.ReadLine();
 
 IotFunctions iot = new();
-while (true)
+Console.WriteLine("Press any key to stop");
+while (Console.KeyAvailable)
 {
     Console.WriteLine("trying...");
     var getIotSuccess = await iot.TryGetTempDetailsAsync(tempDetails =>
