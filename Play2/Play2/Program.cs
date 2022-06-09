@@ -5,7 +5,7 @@ using Allotment;
 
 IotFunctions iot = new();
 Console.WriteLine("Press any key to stop");
-while (Console.KeyAvailable)
+while (!Console.KeyAvailable)
 {
     Console.WriteLine("trying...");
     var getIotSuccess = await iot.TryGetTempDetailsAsync(tempDetails =>
