@@ -1,4 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
+
+using Allotment;
 using Iot.Device.DHTxx;
 
 Console.WriteLine("Starting temp reader...");
@@ -10,6 +12,18 @@ while (true)
     var tempText = tempSuccess ? temperature.ToString() : "FAILED";
     var humidityText = humiditySuccess ? humidity.ToString() : "FAILED";
 
-    Console.WriteLine($"{tempText} - {humidityText}");
-    await Task.Delay(1000);
+    IotFunctions iot = new();
+    while (true)
+    {
+        Console.WriteLine("trying...");
+        var getIotResult = await iot.TryGetTempDetailsAsync(x =>
+        {
+            Console.WriteLine("{Temp=x.Temperature} {Temp=x.Humidity}");
+        });
+        if (!getIotResult)
+        {
+            Console.WriteLine("FAILED");
+        };
+        await Task.Delay(1000);
+    }
 }
