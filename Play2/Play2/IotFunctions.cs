@@ -65,7 +65,7 @@ namespace Allotment
             {
                 Console.WriteLine($"{pin} to low...");
                 controller.Write(pin, PinValue.Low);
-                await Task.Delay(1000);
+                await Task.Delay(3000);
             }
             Console.WriteLine($"{pin} Done!");
         }
