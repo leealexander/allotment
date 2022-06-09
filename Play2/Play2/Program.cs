@@ -35,8 +35,8 @@ while (!end)
             Console.WriteLine(" done!");
             break;
         case "water on":
-            Console.WriteLine(" water on for 3 secs..");
-            await iot.WaterOnAsync(TimeSpan.FromSeconds(3));
+            Console.WriteLine(" water on for 10 secs..");
+            _ =iot.WaterOnAsync(TimeSpan.FromSeconds(10));
             break;
         case "water on?":
             Console.WriteLine($" Is water on? anwser={iot.IsWaterOn()}");
