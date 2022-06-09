@@ -29,13 +29,13 @@ while (!end)
             controller.Write(19, PinValue.Low);
             Console.WriteLine(" done!");
             break;
-        case "Water on":
+        case "water on":
             Console.WriteLine(" water on..");
             controller.Write(13, PinValue.Low);
             Console.WriteLine(" done!");
             break;
-        case "Water off":
-            Console.WriteLine(" water on..");
+        case "water off":
+            Console.WriteLine(" water off..");
             controller.Write(13, PinValue.High);
             Console.WriteLine(" done!");
             break;
