@@ -21,11 +21,13 @@ while (!end)
     {
         case "open door":
             Console.WriteLine(" opening..");
+            controller.Write(19, PinValue.High);
             controller.Write(26, PinValue.Low);
             Console.WriteLine(" done!");
             break;
         case "close door":
             Console.WriteLine(" closing..");
+            controller.Write(26, PinValue.High);
             controller.Write(19, PinValue.Low);
             Console.WriteLine(" done!");
             break;
@@ -41,6 +43,7 @@ while (!end)
             break;
         case "low":
             Console.WriteLine(" all to low....");
+            controller.Write(13, PinValue.High);
             controller.Write(26, PinValue.High);
             controller.Write(19, PinValue.High);
             Console.WriteLine(" done!");
