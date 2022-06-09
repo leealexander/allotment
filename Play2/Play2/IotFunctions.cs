@@ -15,6 +15,7 @@ namespace Allotment
     {
         private const int _doorPinOpen = 26;
         private const int _doorPinClose = 19;
+        private const int _waterPin = 13;
         private readonly TimeSpan _doorActionTimeDelay = TimeSpan.FromSeconds(2);
 
         public async Task<bool> TryGetTempDetailsAsync(Action<TempDetails> tempDetailsFound)
@@ -40,36 +41,61 @@ namespace Allotment
             return false;
         }
 
-        public async Task OpenDoorsAsync()
+        public bool IsWaterOn()
+        {
+            using GpioController controller = new();
+            controller.OpenPin(_waterPin, PinMode.Output);
+            try
+            {
+                return controller.Read(_waterPin) == PinValue.Low;
+            }
+            finally
+            {
+                controller.ClosePin(_waterPin);
+            }
+        }
+
+        public async Task WaterOnAsync(TimeSpan duration)
+        {
+            using GpioController controller = new();
+            controller.OpenPin(_waterPin, PinMode.Output);
+            try
+            {
+                controller.Write(_waterPin, PinValue.Low);
+                await Task.Delay((int)duration.TotalMilliseconds);
+            }
+            finally
+            {
+                controller.Write(_waterPin, PinValue.High);
+                await Task.Delay(200);
+                controller.ClosePin(_waterPin);
+            }
+        }
+
+        public async Task DoorsOpenAsync()
         {
             await DoorActionAsync(_doorPinOpen);
         }
-        public async Task CloseDoorsAsync()
+        public async Task DoorsCloseAsync()
         {
             await DoorActionAsync(_doorPinClose);
         }
 
         private async Task DoorActionAsync(int pin)
         {
-            Console.WriteLine($"Creating GPIO {pin}...");
             using GpioController controller = new();
             controller.OpenPin(pin, PinMode.Output);
-            Console.WriteLine($"Setting {pin} pin to ouput...");
             try
             {
-                Console.WriteLine($"{pin} to high...");
-                controller.Write(pin, PinValue.High);
+                controller.Write(pin, PinValue.Low);
                 await Task.Delay((int)_doorActionTimeDelay.TotalMilliseconds);
             }
             finally
             {
-                Console.WriteLine($"{pin} to low...");
-                controller.Write(pin, PinValue.Low);
-                await Task.Delay(3000);
+                controller.Write(pin, PinValue.High);
+                await Task.Delay(200);
+                controller.ClosePin(pin);
             }
-
-            controller.ClosePin(pin);
-            Console.WriteLine($"{pin} Done!");
         }
     }
 }

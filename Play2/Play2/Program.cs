@@ -4,49 +4,42 @@ using Allotment;
 using System.Device.Gpio;
 
 Console.WriteLine("Starting...");
-using GpioController controller = new();
-var end = false;
-controller.OpenPin(26, PinMode.Output);
-controller.OpenPin(19, PinMode.Output);
-controller.OpenPin(13, PinMode.Output);
-controller.Write(26, PinValue.High);
-controller.Write(19, PinValue.High);
-controller.Write(13, PinValue.High);
+IotFunctions iot = new();
 
+bool end = false;
 while (!end)
 {
     Console.WriteLine("Enter command:");
     var command = Console.ReadLine();
     switch (command?.ToLower())
     {
-        case "open door":
+        case "temp":
+            Console.WriteLine(" Reading temp..");
+            var result = await iot.TryGetTempDetailsAsync(r =>
+            {
+                Console.WriteLine($" T={r.Temperature} H={r.Humidity}");
+            });
+            if (!result)
+            {
+                Console.WriteLine(" failed to read temp");
+            }
+            break;
+        case "door open":
             Console.WriteLine(" opening..");
-            controller.Write(19, PinValue.High);
-            controller.Write(26, PinValue.Low);
+            await iot.DoorsOpenAsync();
             Console.WriteLine(" done!");
             break;
-        case "close door":
+        case "door close":
             Console.WriteLine(" closing..");
-            controller.Write(26, PinValue.High);
-            controller.Write(19, PinValue.Low);
+            await iot.DoorsCloseAsync();
             Console.WriteLine(" done!");
             break;
         case "water on":
-            Console.WriteLine(" water on..");
-            controller.Write(13, PinValue.Low);
-            Console.WriteLine(" done!");
+            Console.WriteLine(" water on for 3 secs..");
+            await iot.WaterOnAsync(TimeSpan.FromSeconds(3));
             break;
-        case "water off":
-            Console.WriteLine(" water off..");
-            controller.Write(13, PinValue.High);
-            Console.WriteLine(" done!");
-            break;
-        case "low":
-            Console.WriteLine(" all to low....");
-            controller.Write(13, PinValue.High);
-            controller.Write(26, PinValue.High);
-            controller.Write(19, PinValue.High);
-            Console.WriteLine(" done!");
+        case "water on?":
+            Console.WriteLine($" Is water on? anwser={iot.IsWaterOn()}");
             break;
         case "exit":
         case "quit":
@@ -56,31 +49,4 @@ while (!end)
             break;
     }
 }
-
-Console.WriteLine("shutting down....");
-controller.ClosePin(26);
-controller.ClosePin(19);
-controller.ClosePin(13);
-Console.WriteLine("Finished!");
-
-//IotFunctions iot = new();
-//Console.WriteLine("Press any key to stop");
-//while (!Console.KeyAvailable)
-//{
-//    Console.WriteLine("trying...");
-//    var getIotSuccess = await iot.TryGetTempDetailsAsync(tempDetails =>
-//    {
-//        Console.WriteLine($"Temp={tempDetails.Temperature} Humidity={tempDetails.Humidity}");
-//    });
-//    if (getIotSuccess)
-//    {
-//        await iot.OpenDoorsAsync();
-//        await iot.CloseDoorsAsync();
-//    }
-//    else
-//    {
-//        Console.WriteLine("FAILED");
-//    };
-//    await Task.Delay(3000);
-//}
 
