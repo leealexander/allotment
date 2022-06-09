@@ -8,8 +8,10 @@ using GpioController controller = new();
 var end = false;
 controller.OpenPin(26, PinMode.Output);
 controller.OpenPin(19, PinMode.Output);
-controller.Write(26, PinValue.Low);
-controller.Write(19, PinValue.Low);
+controller.OpenPin(13, PinMode.Output);
+controller.Write(26, PinValue.High);
+controller.Write(19, PinValue.High);
+controller.Write(13, PinValue.High);
 
 while (!end)
 {
@@ -19,18 +21,28 @@ while (!end)
     {
         case "open door":
             Console.WriteLine(" opening..");
-            controller.Write(26, PinValue.High);
+            controller.Write(26, PinValue.Low);
             Console.WriteLine(" done!");
             break;
         case "close door":
             Console.WriteLine(" closing..");
-            controller.Write(19, PinValue.High);
+            controller.Write(19, PinValue.Low);
+            Console.WriteLine(" done!");
+            break;
+        case "Water on":
+            Console.WriteLine(" water on..");
+            controller.Write(13, PinValue.Low);
+            Console.WriteLine(" done!");
+            break;
+        case "Water off":
+            Console.WriteLine(" water on..");
+            controller.Write(13, PinValue.High);
             Console.WriteLine(" done!");
             break;
         case "low":
             Console.WriteLine(" all to low....");
-            controller.Write(26, PinValue.Low);
-            controller.Write(19, PinValue.Low);
+            controller.Write(26, PinValue.High);
+            controller.Write(19, PinValue.High);
             Console.WriteLine(" done!");
             break;
         case "exit":
@@ -43,10 +55,9 @@ while (!end)
 }
 
 Console.WriteLine("shutting down....");
-controller.Write(26, PinValue.Low);
-controller.Write(19, PinValue.Low);
 controller.ClosePin(26);
 controller.ClosePin(19);
+controller.ClosePin(13);
 Console.WriteLine("Finished!");
 
 //IotFunctions iot = new();
