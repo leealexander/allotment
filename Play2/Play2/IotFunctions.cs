@@ -67,6 +67,8 @@ namespace Allotment
                 controller.Write(pin, PinValue.Low);
                 await Task.Delay(3000);
             }
+
+            controller.ClosePin(pin);
             Console.WriteLine($"{pin} Done!");
         }
     }
