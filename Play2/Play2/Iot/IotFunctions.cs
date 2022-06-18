@@ -2,16 +2,22 @@
 using System.Device.Gpio;
 using UnitsNet;
 
-namespace Allotment
+namespace Allotment.Iot
 {
-    public record TempDetails
+    public interface IIotFunctions
     {
-        public Temperature Temperature { get; set; }
+        bool AreDoorsClosing { get; }
+        bool AreDoorsOpening { get; }
+        bool IsWaterOn { get; }
 
-        public RelativeHumidity Humidity { get; set; }
+        Task DoorsCloseAsync();
+        Task DoorsOpenAsync();
+        bool IsPinOn(int pin);
+        Task<bool> TryGetTempDetailsAsync(Action<TempDetails> tempDetailsFound);
+        Task WaterOnAsync(TimeSpan duration);
     }
 
-    public class IotFunctions
+    public class IotFunctions : IIotFunctions
     {
         private const int _doorPinOpen = 26;
         private const int _doorPinClose = 19;
@@ -20,7 +26,7 @@ namespace Allotment
 
         public async Task<bool> TryGetTempDetailsAsync(Action<TempDetails> tempDetailsFound)
         {
-            using var dht = new Dht11(12);
+            using var dht = new Dht22(12);
             for (int tryTimes = 0; tryTimes < 30; tryTimes++)
             {
                 var tempSuccess = dht.TryReadTemperature(out var temperature);
@@ -41,19 +47,9 @@ namespace Allotment
             return false;
         }
 
-        public bool IsWaterOn()
-        {
-            using GpioController controller = new();
-            controller.OpenPin(_waterPin, PinMode.Output);
-            try
-            {
-                return controller.Read(_waterPin) == PinValue.Low;
-            }
-            finally
-            {
-                controller.ClosePin(_waterPin);
-            }
-        }
+        public bool IsWaterOn => IsPinOn(_waterPin);
+        public bool AreDoorsOpening => IsPinOn(_doorPinOpen);
+        public bool AreDoorsClosing => IsPinOn(_doorPinClose);
 
         public async Task WaterOnAsync(TimeSpan duration)
         {
@@ -97,5 +93,25 @@ namespace Allotment
                 controller.ClosePin(pin);
             }
         }
+
+        public bool IsPinOn(int pin)
+        {
+            using GpioController controller = new();
+            controller.OpenPin(pin, PinMode.Output);
+            try
+            {
+                return controller.Read(_waterPin) == PinValue.Low;
+            }
+            finally
+            {
+                controller.ClosePin(_waterPin);
+            }
+        }
+    }
+    public record TempDetails
+    {
+        public Temperature Temperature { get; set; }
+
+        public RelativeHumidity Humidity { get; set; }
     }
 }
