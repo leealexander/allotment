@@ -11,8 +11,10 @@ namespace Allotment.Iot
         bool IsWaterOn { get; }
         Task DoorsCloseAsync();
         Task DoorsOpenAsync();
-        Task StopWaterAsync();
         Task WaterOnAsync(TimeSpan duration);
+        Task WaterOffAsync();
+
+        public string Status { get; }
     }
 
     public class IotControlService : IIotControlService
@@ -34,6 +36,29 @@ namespace Allotment.Iot
         public bool AreDoorsOpening => _functions.AreDoorsOpening;
         public bool IsWaterOn => _functions.IsWaterOn;
 
+        public string Status
+        {
+            get
+            {
+                try
+                {
+                    var doors = AreDoorsClosing ? "Doors closing" : "";
+                    doors = AreDoorsOpening ? "Doors opening" : "";
+                    if (string.IsNullOrWhiteSpace(doors))
+                    {
+                        doors = _functions.LastDoorCommand == null ? "Unknown door state" : _functions.LastDoorCommand.ToString();
+                    }
+                    var water = IsWaterOn ? "Water is on" : "Water is off";
+                    return $"{doors} - {water}";
+                }
+                catch(Exception ex )
+                {
+                    return $"Error: {ex.Message}";
+                }
+            }
+        }
+
+
         public async Task DoorsOpenAsync()
         {
             await _functions.DoorsOpenAsync();
@@ -50,7 +75,7 @@ namespace Allotment.Iot
             await _functions.WaterOnAsync();
             _jobManager.RunJobIn(ctx => _functions.WaterOffAsync(), duration);
         }
-        public async Task StopWaterAsync()
+        public async Task WaterOffAsync()
         {
             await _functions.WaterOffAsync();
         }

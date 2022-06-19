@@ -5,6 +5,57 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 id="temp" class="display-4">Temp details: @Model.TempDetails</h1>
+        <div class="col-lg-1">
+            <form asp-page-handler="DoorsOpen" method="post">
+                <button class="btn btn-primary">Open Doors</button>
+            </form>
+        </div>
+        <br />
+        <div class="col-lg-1">
+            <form asp-page-handler="DoorsClose" method="post">
+                <button class="btn btn-secondary">Close Doors</button>
+            </form>
+        </div>
+        <br />
+        <div class="col-lg-1">
+            <form asp-page-handler="waterOn" method="post">
+                <button class="btn btn-warning">Water on 10mins</button>
+            </form>
+        </div>
+        <br />
+        <div class="col-lg-1">
+            <form asp-page-handler="waterOff" method="post">
+                <button class="btn btn-dark">Water off</button>
+            </form>
+        </div>
+        <br />
+        <h2 id="status" class="display-4">Status: @Model.Status</h2>
 </div>
+
+<script>
+var pollTime = 3000;
+var errorTime = 1000;
+function updateState() {
+    fetch('/api/status')
+        .then(response => {
+            if (!response.ok) {
+                window.setTimeout(updateState, errorTime);
+                var errorMessage = "Network error getting status";
+                return {
+                    temp: errorMessage,
+                    generalStatus: errorMessage
+                } 
+            }
+            else {
+                window.setTimeout(updateState, pollTime)
+            }
+            return response.json()
+        })
+      .then(data => {
+          document.getElementById('temp').innerText = data.temp;
+          document.getElementById('status').innerText = data.generalStatus;
+      });
+}
+window.setTimeout(updateState, pollTime)
+</script>

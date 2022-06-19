@@ -1,14 +1,11 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Allotmen.Iot.Monitoring;
+using Allotment.Iot;
+using Allotment.Jobs;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
 
 
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
@@ -42,6 +39,10 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddRazorPages()
     .AddMicrosoftIdentityUI();
 
+builder.Services.AddIot();
+builder.Services.AddJobs()
+    .StartWith<TempMonitor>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -67,5 +68,14 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 app.MapControllers();
+
+app.MapGet("/api/status", (IIotControlService iotService, ITempMonitor tempMonitor) =>
+{
+    return Results.Ok(new
+    {
+        GeneralStatus = iotService.Status,
+        Temp = tempMonitor.Current?.ToString() ?? "No temperature readings available"
+    });
+});
 
 app.Run();

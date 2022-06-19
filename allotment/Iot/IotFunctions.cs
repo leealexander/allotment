@@ -4,10 +4,12 @@ using UnitsNet;
 
 namespace Allotment.Iot
 {
+    public enum LastDoorCommand{DoorsOpen, DoorsClosed}
     public interface IIotFunctions
     {
         bool AreDoorsClosing { get; }
         bool AreDoorsOpening { get; }
+        LastDoorCommand ?LastDoorCommand { get; }
         bool IsWaterOn { get; }
 
         Task DoorsCloseAsync();
@@ -23,7 +25,10 @@ namespace Allotment.Iot
         private const int _doorPinOpen = 26;
         private const int _doorPinClose = 19;
         private const int _waterPin = 13;
-        private readonly TimeSpan _doorActionTimeDelay = TimeSpan.FromSeconds(2);
+        private readonly TimeSpan _doorActionTimeDelay = TimeSpan.FromSeconds(50);
+        private CancellationTokenSource _doorOpenCancel = new();
+        private CancellationTokenSource _doorCloseCancel = new();
+        private LastDoorCommand ?_lastDoorCommand;
 
         public async Task<bool> TryGetTempDetailsAsync(Action<TempDetails> tempDetailsFound)
         {
@@ -51,6 +56,8 @@ namespace Allotment.Iot
         public bool IsWaterOn => IsPinOn(_waterPin);
         public bool AreDoorsOpening => IsPinOn(_doorPinOpen);
         public bool AreDoorsClosing => IsPinOn(_doorPinClose);
+        public LastDoorCommand? LastDoorCommand => _lastDoorCommand;
+
 
         public async Task WaterOnAsync()
         {
@@ -71,21 +78,43 @@ namespace Allotment.Iot
 
         public async Task DoorsOpenAsync()
         {
-            await DoorActionAsync(_doorPinOpen);
+            if (_doorOpenCancel.IsCancellationRequested)
+            {
+                var old = _doorOpenCancel;
+                _doorOpenCancel = new CancellationTokenSource();
+                old.Dispose();
+            }
+            _doorCloseCancel.Cancel();
+            await DoorActionAsync(_doorPinOpen, _doorOpenCancel.Token);
+            if (!_doorOpenCancel.IsCancellationRequested)
+            {
+                _lastDoorCommand = Iot.LastDoorCommand.DoorsOpen;
+            }
         }
         public async Task DoorsCloseAsync()
         {
-            await DoorActionAsync(_doorPinClose);
+            if (_doorCloseCancel.IsCancellationRequested)
+            {
+                var old = _doorCloseCancel;
+                _doorCloseCancel = new CancellationTokenSource();
+                old.Dispose();
+            }
+            _doorOpenCancel.Cancel();
+            await DoorActionAsync(_doorPinClose, _doorCloseCancel.Token);
+            if (!_doorCloseCancel.IsCancellationRequested)
+            {
+                _lastDoorCommand = Iot.LastDoorCommand.DoorsClosed;
+            }
         }
 
-        private async Task DoorActionAsync(int pin)
+        private async Task DoorActionAsync(int pin, CancellationToken cancellationToken)
         {
             using GpioController controller = new();
             controller.OpenPin(pin, PinMode.Output);
             try
             {
                 controller.Write(pin, PinValue.Low);
-                await Task.Delay((int)_doorActionTimeDelay.TotalMilliseconds);
+                await Task.Delay((int)_doorActionTimeDelay.TotalMilliseconds, cancellationToken);
             }
             finally
             {
@@ -99,14 +128,7 @@ namespace Allotment.Iot
         {
             using GpioController controller = new();
             controller.OpenPin(pin, PinMode.Output);
-            try
-            {
-                return controller.Read(_waterPin) == PinValue.Low;
-            }
-            finally
-            {
-                controller.ClosePin(_waterPin);
-            }
+            return controller.Read(_waterPin) == PinValue.Low;
         }
     }
     public record TempDetails
