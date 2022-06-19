@@ -128,7 +128,7 @@ namespace Allotment.Iot
         {
             using GpioController controller = new();
             controller.OpenPin(pin, PinMode.Output);
-            return controller.Read(_waterPin) == PinValue.Low;
+            return controller.Read(pin) == PinValue.Low;
         }
     }
     public record TempDetails
