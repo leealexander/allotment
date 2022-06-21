@@ -21,6 +21,24 @@ namespace Allotmen.Iot.Monitoring
         {
             _logger = logger;
             _iotFunctions = iotFunctions;
+            ReadSavedReadings();
+        }
+
+        private void ReadSavedReadings()
+        {
+            if (File.Exists(FileForToday))
+            {
+                _readings.AddRange(from fl in File.ReadAllLines(FileForToday)
+                                   let split = fl.Split(',')
+                                   where split.Length == 3
+                                   select new TempDetails
+                                   {
+                                       TimeTakenUtc = DateTime.Parse(split[0]).ToUniversalTime(),
+                                       Temperature = new UnitsNet.Temperature(double.Parse(split[1]), TemperatureUnit.DegreeCelsius),
+                                       Humidity = new UnitsNet.RelativeHumidity(double.Parse(split[2]), RelativeHumidityUnit.Percent)
+                                   });
+
+            }
         }
 
         public IEnumerable<TempDetails> ReadingsByHour
@@ -86,8 +104,10 @@ namespace Allotmen.Iot.Monitoring
         {
             try
             {
+                TempDetails details = null;
                 var readTemp = await _iotFunctions.TryGetTempDetailsAsync(x =>
                 {
+                    details = x;
                     lock (_readings)
                     {
                         if (_readings.Count > 0 && _readings[^1].TimeTakenUtc.ToLocalTime().Day != DateTime.Now.Day)
@@ -101,6 +121,10 @@ namespace Allotmen.Iot.Monitoring
                         }
                     }
                 });
+                if (readTemp && details is not null)
+                {
+                    await File.AppendAllLinesAsync(FileForToday, new[] { $"{details.TimeTakenUtc:o},{details.Temperature.DegreesCelsius},{details.Humidity.Percent}" });
+                }
                 ctx.RunAgainIn(readTemp ? TimeSpan.FromMinutes(1) : TimeSpan.FromSeconds(1));
                 return;
             }
@@ -109,6 +133,13 @@ namespace Allotmen.Iot.Monitoring
                 _logger.LogError("Failed to read temp {0}", ex.Message);
             }
             ctx.RunAgainIn(TimeSpan.FromMinutes(1));
+        }
+        private string FileForToday
+        {
+            get
+            {
+                return $"/data/temp/{DateTime.Now:dd-MM-yyyy}.csv";
+            }
         }
     }
 }
