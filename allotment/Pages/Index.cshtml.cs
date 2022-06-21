@@ -1,7 +1,9 @@
 ﻿using Allotmen.Iot.Monitoring;
 using Allotment.Iot;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Collections.Generic;
 
 namespace allotment.Pages
 {
@@ -11,18 +13,25 @@ namespace allotment.Pages
         private readonly ITempMonitor _tempMonitor;
         private readonly IIotControlService _iotControlService;
 
+
         public IndexModel(ILogger<IndexModel> logger, ITempMonitor tempMonitor, IIotControlService iotControlService)
         {
             _logger = logger;
             _tempMonitor = tempMonitor;
             _iotControlService = iotControlService;
+            var readings = _tempMonitor.ReadingsByHour.ToArray();
+            TempByHour = new HtmlString(string.Join(',', readings.Select(x => $"'{x?.Temperature.DegreesCelsius.ToString() ?? "null"}'")));
+            HumidityByHour = new HtmlString(string.Join(',', readings.Select(x => $"'{x?.Humidity.Percent.ToString() ?? "null"}'")));
         }
 
         public string TempDetails => _tempMonitor.Current == null ? "No temperature readings available" : _tempMonitor.Current.ToString();
 
         public string Status => _iotControlService.Status;
 
+        public HtmlString Labels => new HtmlString(string.Join(',',Enumerable.Range(0, 24).Select(x => $"'{x:D2}'")));
 
+        public HtmlString TempByHour { get; }
+        public HtmlString HumidityByHour { get; }
 
         public async Task<IActionResult> OnPostDoorsOpen()
         {

@@ -43,9 +43,10 @@ namespace Allotment.Iot
                 {
                     tempDetailsFound(new TempDetails
                     {
+                        TimeTakenUtc = DateTime.UtcNow,
                         Humidity = humidity,
                         Temperature = temperature
-                    });
+                    }); ;
                     return true;
                 }
             }
@@ -133,6 +134,7 @@ namespace Allotment.Iot
     }
     public record TempDetails
     {
+        public DateTime TimeTakenUtc { get; set; }
         public Temperature Temperature { get; set; }
 
         public RelativeHumidity Humidity { get; set; }
