@@ -36,6 +36,11 @@ namespace Allotment.Jobs
             {
                 RunJobNow(job);
             }
+            else
+            {
+                var qj = new QueuedJob(startAtUtc.Value, job);
+                AddJobToQueue(qj);
+            }
         }
 
 

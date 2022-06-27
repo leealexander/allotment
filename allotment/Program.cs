@@ -73,22 +73,23 @@ app.MapControllers();
 app.MapGet("/api/status", (IIotControlService iotService, ITempMonitor tempMonitor) =>
 {
     var t = tempMonitor.Current;
-    string tempText;
+    string takenAt;
     if (t == null)
     {
-        tempText = "No temperature readings available";
+        takenAt = "No temperature readings available";
     }
     else
     {
-        tempText = $"temp={t.Temperature}, hum={t.Humidity}, taken={t.TimeTakenUtc.ToLocalTime()}";
-
+        takenAt = t.TimeTakenUtc.ToLocalTime().ToString(); 
     }
 
     return Results.Ok(new
     {
         GeneralStatus = iotService.Status,
-        Temp = tempText
-    });
+        TakenAt = takenAt,
+        Temp = t == null ? "Unknown" :  t.Temperature.ToString(),
+        Humidity = t == null ? "Unknown" :  t.Humidity.ToString()
+    });;
 });
 
 app.Run();

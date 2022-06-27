@@ -20,8 +20,6 @@ namespace Allotment.Iot
     public class IotControlService : IIotControlService
     {
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
-        private TimeSpan? _waterOnDuration;
-        private DateTime? _waterTurnedOnAtUtc;
         private readonly IIotFunctions _functions;
         private readonly IJobManager _jobManager;
 
@@ -69,9 +67,6 @@ namespace Allotment.Iot
         }
         public async Task WaterOnAsync(TimeSpan duration)
         {
-            _waterOnDuration = duration;
-            _waterTurnedOnAtUtc = DateTime.UtcNow;
-
             await _functions.WaterOnAsync();
             _jobManager.RunJobIn(ctx => _functions.WaterOffAsync(), duration);
         }
