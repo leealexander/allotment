@@ -5,7 +5,9 @@ FROM mcr.microsoft.com/dotnet/aspnet:6.0$IMAGE_TAG_APPEND AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
-RUN ls
+RUN apt update && apt install tzdata -y
+ENV TZ="Europe/London"
+
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["allotment/allotment.csproj", "allotment/"]

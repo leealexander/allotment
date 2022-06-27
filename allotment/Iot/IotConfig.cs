@@ -11,6 +11,8 @@ namespace Allotment.Iot
             services.AddSingleton<ITempMonitor>(sp=>sp.GetRequiredService<TempMonitor>());
             services.AddSingleton<IIotControlService, IotControlService>();
             services.AddSingleton<IIotFunctions, IotFunctions>();
+            services.AddTransient<IotStartup>();
+            
             return services;
         }
     }

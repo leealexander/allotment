@@ -12,6 +12,8 @@ namespace Allotment.Iot
         LastDoorCommand ?LastDoorCommand { get; }
         bool IsWaterOn { get; }
 
+        public Task TurnOffAllPinsAsync();
+
         Task DoorsCloseAsync();
         Task DoorsOpenAsync();
         bool IsPinOn(int pin);
@@ -59,6 +61,21 @@ namespace Allotment.Iot
         public bool AreDoorsClosing => IsPinOn(_doorPinClose);
         public LastDoorCommand? LastDoorCommand => _lastDoorCommand;
 
+
+        public async Task TurnOffAllPinsAsync()
+        {
+            using GpioController controller = new();
+            controller.OpenPin(_waterPin, PinMode.Output);
+            controller.OpenPin(_doorPinClose, PinMode.Output);
+            controller.OpenPin(_doorPinOpen, PinMode.Output);
+            controller.Write(_waterPin, PinValue.High);
+            controller.Write(_doorPinClose, PinValue.High);
+            controller.Write(_doorPinOpen, PinValue.High);
+            await Task.Delay(200);
+            controller.ClosePin(_waterPin);
+            controller.ClosePin(_doorPinClose);
+            controller.ClosePin(_doorPinOpen);
+        }
 
         public async Task WaterOnAsync()
         {

@@ -41,6 +41,7 @@ builder.Services.AddRazorPages()
 
 builder.Services.AddIot();
 builder.Services.AddJobs()
+    .StartWith<IotStartup>()
     .StartWith<TempMonitor>();
 
 var app = builder.Build();
@@ -71,10 +72,22 @@ app.MapControllers();
 
 app.MapGet("/api/status", (IIotControlService iotService, ITempMonitor tempMonitor) =>
 {
+    var t = tempMonitor.Current;
+    string tempText;
+    if (t == null)
+    {
+        tempText = "No temperature readings available";
+    }
+    else
+    {
+        tempText = $"temp={t.Temperature}, hum={t.Humidity}, taken={t.TimeTakenUtc.ToLocalTime()}";
+
+    }
+
     return Results.Ok(new
     {
         GeneralStatus = iotService.Status,
-        Temp = tempMonitor.Current?.ToString() ?? "No temperature readings available"
+        Temp = tempText
     });
 });
 

@@ -24,7 +24,19 @@ namespace allotment.Pages
             HumidityByHour = new HtmlString(string.Join(',', readings.Select(x => $"'{x?.Humidity.Percent.ToString() ?? "null"}'")));
         }
 
-        public string TempDetails => _tempMonitor.Current == null ? "No temperature readings available" : _tempMonitor.Current.ToString();
+        public string TempDetails 
+        {
+            get
+            {
+                if (_tempMonitor.Current == null)
+                {
+                    return "No temperature readings available";
+                }
+                var t = _tempMonitor.Current;
+
+                return $"temp={t.Temperature}, hum={t.Humidity}, taken={t.TimeTakenUtc.ToLocalTime()}";
+            }
+        }
 
         public string Status => _iotControlService.Status;
 

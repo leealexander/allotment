@@ -6,98 +6,93 @@
 <h1 id="temp" class="display-4">Temp details: @Model.TempDetails</h1>
 
 <div class="container">
-  <div class="row">
-    <div class="col-md-auto">
-        <div class="text-left">
-            <div class="col-lg-1">
-                <form asp-page-handler="DoorsOpen" method="post">
-                    <button class="btn btn-primary">Open Doors</button>
-                </form>
-            </div>
-            <br />
-            <div class="col-lg-1">
-                <form asp-page-handler="DoorsClose" method="post">
-                    <button class="btn btn-secondary">Close Doors</button>
-                </form>
-            </div>
-            <br />
-            <div class="col-lg-1">
-                <form asp-page-handler="waterOn" method="post">
-                    <button class="btn btn-warning">Water on 10mins</button>
-                </form>
-            </div>
-            <br />
-            <div class="col-lg-1">
-                <form asp-page-handler="waterOff" method="post">
-                    <button class="btn btn-dark">Water off</button>
-                </form>
+    <div class="row">
+        <div class="col-2">
+            <form asp-page-handler="DoorsOpen" method="post">
+                <button class="btn btn-primary">Open Doors</button>
+            </form>
+            <br/>
+            <form asp-page-handler="DoorsClose" method="post">
+                <button class="btn btn-secondary">Close Doors</button>
+            </form>
+            <br/>
+            <form asp-page-handler="waterOn" method="post">
+                <button class="btn btn-warning">Water on 10mins</button>
+            </form>
+            <br/>
+            <form asp-page-handler="waterOff" method="post">
+                <button class="btn btn-dark">Water off</button>
+            </form>
+            <br/>
+        </div>
+        <div class="col-10">
+            <div class="chart-container">
+                <canvas id="myChart"></canvas>
             </div>
         </div>
     </div>
-    <div class="col col-lg-2">
-        <div class="chart-container" style="height:40vw; width:40vw">
-            <canvas id="myChart"></canvas>
-        <span id="status" class="display-4">Status: @Model.Status</span>
+    <div class="row">
+        <div class="col-md-auto">
+            <span id="status" class="display-4">Status: @Model.Status</span>
         </div>
     </div>
-  </div>
 </div>
 
 
 
-@section scripts 
-{
-    <script>
-    const ctx = document.getElementById('myChart').getContext('2d');
-    const myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: [@Model.Labels],
-            datasets: [{
-                label: 'Temp',
-                borderColor: "#bae755",
-                data: [@Model.TempByHour],
-            },{
-                label: 'Humidity',
-                borderColor: "##9255e7",
-                data: [@Model.HumidityByHour],
-            }
-            ]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
+    @section scripts
+        {
+        <script>
+            const ctx = document.getElementById('myChart').getContext('2d');
+            const myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [@Model.Labels],
+                    datasets: [{
+                        label: 'Temp',
+                        borderColor: "#bae755",
+                        data: [@Model.TempByHour],
+                    }, {
+                        label: 'Humidity',
+                        borderColor: "##9255e7",
+                        data: [@Model.HumidityByHour],
+                    }
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
                 }
-            }
-        }
-    });
-    </script>
+            });
+        </script>
 
-    <script>
-    var pollTime = 3000;
-    var errorTime = 1000;
-    function updateState() {
-        fetch('/api/status')
-            .then(response => {
-                if (!response.ok) {
-                    window.setTimeout(updateState, errorTime);
-                    var errorMessage = "Network error getting status";
-                    return {
-                        temp: errorMessage,
-                        generalStatus: errorMessage
-                    } 
-                }
-                else {
-                    window.setTimeout(updateState, pollTime)
-                }
-                return response.json()
-            })
-          .then(data => {
-              document.getElementById('temp').innerText = data.temp;
-              document.getElementById('status').innerText = data.generalStatus;
-          });
+        <script>
+            var pollTime = 3000;
+            var errorTime = 1000;
+            function updateState() {
+                fetch('/api/status')
+                    .then(response => {
+                        if (!response.ok) {
+                            window.setTimeout(updateState, errorTime);
+                            var errorMessage = "Network error getting status";
+                            return {
+                                temp: errorMessage,
+                                generalStatus: errorMessage
+                            }
+                        }
+                        else {
+                            window.setTimeout(updateState, pollTime)
+                        }
+                        return response.json()
+                    })
+                    .then(data => {
+                        document.getElementById('temp').innerText = data.temp;
+                        document.getElementById('status').innerText = data.generalStatus;
+                    });
+            }
+            window.setTimeout(updateState, pollTime)
+        </script>
     }
-    window.setTimeout(updateState, pollTime)
-    </script>
-}
