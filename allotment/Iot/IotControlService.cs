@@ -13,6 +13,7 @@ namespace Allotment.Iot
         Task DoorsOpenAsync();
         Task WaterOnAsync(TimeSpan duration);
         Task WaterOffAsync();
+        Task StopAllAsync();
 
         public string Status { get; }
     }
@@ -54,6 +55,11 @@ namespace Allotment.Iot
                     return $"Error: {ex.Message}";
                 }
             }
+        }
+
+        public async Task StopAllAsync()
+        {
+            await _functions.TurnOffAllPinsAsync();
         }
 
 

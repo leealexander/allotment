@@ -68,5 +68,11 @@ namespace allotment.Pages
             await _iotControlService.WaterOffAsync();
             return Redirect("/");
         }
+
+        public async Task<IActionResult> OnPostStopAll()
+        {
+            await _iotControlService.StopAllAsync();
+            return Redirect("/");
+        }
     }
 }
