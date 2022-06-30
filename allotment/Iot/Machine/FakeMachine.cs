@@ -1,4 +1,5 @@
-﻿using Allotment.Jobs;
+﻿using Allotment.Iot.Models;
+using Allotment.Jobs;
 using UnitsNet;
 
 namespace Allotment.Iot.Machine

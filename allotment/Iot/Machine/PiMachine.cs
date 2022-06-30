@@ -1,6 +1,6 @@
-﻿using Iot.Device.DHTxx;
+﻿using Allotment.Iot.Models;
+using Iot.Device.DHTxx;
 using System.Device.Gpio;
-using UnitsNet;
 using UnitsNet.Units;
 
 namespace Allotment.Iot.Machine
@@ -164,12 +164,5 @@ namespace Allotment.Iot.Machine
             }
         }
 
-    }
-    public record TempDetails
-    {
-        public DateTime TimeTakenUtc { get; set; }
-        public Temperature Temperature { get; set; }
-
-        public RelativeHumidity Humidity { get; set; }
     }
 }

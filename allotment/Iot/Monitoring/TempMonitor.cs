@@ -1,5 +1,5 @@
 ﻿using Allotment.Iot;
-using Allotment.Iot.Machine;
+using Allotment.Iot.Models;
 using Allotment.Jobs;
 
 namespace Allotmen.Iot.Monitoring

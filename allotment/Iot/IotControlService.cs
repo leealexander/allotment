@@ -1,6 +1,5 @@
-﻿using Allotment.Jobs;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+﻿using Allotment.Iot.Models;
+using Allotment.Jobs;
 
 namespace Allotment.Iot
 {
@@ -15,7 +14,7 @@ namespace Allotment.Iot
         Task WaterOffAsync();
         Task StopAllAsync();
 
-        public string Status { get; }
+        public CurrentStatus Status { get; }
     }
 
     public class IotControlService : IIotControlService
@@ -35,28 +34,37 @@ namespace Allotment.Iot
         public bool AreDoorsOpening => _functions.AreDoorsOpening;
         public bool IsWaterOn => _functions.IsWaterOn;
 
-        public string Status
+        public CurrentStatus Status
         {
             get
             {
+                var status = new CurrentStatus
+                {
+                    DoorsOpening = _functions.AreDoorsOpening,
+                    DoorsClosing = _functions.AreDoorsClosing,
+                    WaterOn = _functions.IsWaterOn,
+                };
                 try
                 {
-                    var doors = AreDoorsClosing ? "Doors closing" : "";
+                    _functions.TryGetTempDetailsAsync(x => status.Temp = x);
+                    var doors = status.DoorsClosing ? "Doors closing" : "";
                     if (string.IsNullOrWhiteSpace(doors))
                     {
-                        doors = AreDoorsOpening ? "Doors opening" : "";
+                        doors = status.DoorsOpening ? "Doors opening" : "";
                     }
                     if (string.IsNullOrWhiteSpace(doors))
                     {
                         doors = _functions.LastDoorCommand == null ? "Unknown door state" : _functions.LastDoorCommand.ToString();
                     }
-                    var water = IsWaterOn ? "Water is on" : "Water is off";
-                    return $"{doors} - {water}";
+                    var water = status.WaterOn ? "Water is on" : "Water is off";
+                    status.Textual = $"{doors} - {water}";
                 }
                 catch(Exception ex )
                 {
-                    return $"Error: {ex.Message}";
+                    status.Textual = $"Error: {ex.Message}";
                 }
+
+                return status;
             }
         }
 

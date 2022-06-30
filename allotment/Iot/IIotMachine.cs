@@ -1,4 +1,5 @@
 ﻿using Allotment.Iot.Machine;
+using Allotment.Iot.Models;
 
 namespace Allotment.Iot
 {

@@ -38,7 +38,7 @@ namespace allotment.Pages
             }
         }
 
-        public string Status => _iotControlService.Status;
+        public string Status => _iotControlService.Status.Textual;
 
         public HtmlString Labels => new HtmlString(string.Join(',',Enumerable.Range(0, 24).Select(x => $"'{x:D2}'")));
 

@@ -70,26 +70,29 @@ app.UseAuthorization();
 app.MapRazorPages();
 app.MapControllers();
 
-app.MapGet("/api/status", (IIotControlService iotService, ITempMonitor tempMonitor) =>
+app.MapGet("/api/status", (IIotControlService iotService) =>
 {
-    var t = tempMonitor.Current;
+    var status = iotService.Status;
     string takenAt;
-    if (t == null)
+    if (status.Temp == null)
     {
         takenAt = "No temperature readings available";
     }
     else
     {
-        takenAt = t.TimeTakenUtc.ToLocalTime().ToString(); 
+        takenAt = status.Temp.TimeTakenUtc.ToLocalTime().ToString(); 
     }
 
     return Results.Ok(new
     {
-        GeneralStatus = iotService.Status,
+        GeneralStatus = iotService.Status.Textual,
         TakenAt = takenAt,
-        Temp = t == null ? "Unknown" :  t.Temperature.ToString(),
-        Humidity = t == null ? "Unknown" :  t.Humidity.ToString()
-    });;
+        Temp = status.Temp == null ? "Unknown" : status.Temp.Temperature.ToString(),
+        Humidity = status.Temp == null ? "Unknown" : status.Temp.Humidity.ToString(),
+        DoorsOpening = status.DoorsOpening,
+        DoorsClosing = status.DoorsClosing,
+        WaterOn = status.WaterOn
+    });
 });
 
 app.Run();
