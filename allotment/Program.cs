@@ -39,7 +39,7 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddRazorPages()
     .AddMicrosoftIdentityUI();
 
-builder.Services.AddIot();
+builder.Services.AddIot(builder.Environment.IsDevelopment());
 builder.Services.AddJobs()
     .StartWith<IotStartup>()
     .StartWith<TempMonitor>();

@@ -1,7 +1,6 @@
 ﻿using Allotment.Iot;
+using Allotment.Iot.Machine;
 using Allotment.Jobs;
-using System.Collections.Generic;
-using UnitsNet.Units;
 
 namespace Allotmen.Iot.Monitoring
 {
@@ -13,33 +12,17 @@ namespace Allotmen.Iot.Monitoring
 
     public class TempMonitor : IJobService, ITempMonitor
     {
-        private readonly IIotFunctions _iotFunctions;
+        private readonly IIotMachine _iotFunctions;
         private readonly List<TempDetails> _readings = new();
         private readonly ILogger<TempMonitor> _logger;
 
-        public TempMonitor(ILogger<TempMonitor> logger, IIotFunctions iotFunctions)
+        public TempMonitor(ILogger<TempMonitor> logger, IIotMachine iotFunctions)
         {
             _logger = logger;
             _iotFunctions = iotFunctions;
-            ReadSavedReadings();
+            _readings = _iotFunctions.GetDayReadings();
         }
 
-        private void ReadSavedReadings()
-        {
-            if (File.Exists(FileForToday))
-            {
-                _readings.AddRange(from fl in File.ReadAllLines(FileForToday)
-                                   let split = fl.Split(',')
-                                   where split.Length == 3
-                                   select new TempDetails
-                                   {
-                                       TimeTakenUtc = DateTime.Parse(split[0]).ToUniversalTime(),
-                                       Temperature = new UnitsNet.Temperature(double.Parse(split[1]), TemperatureUnit.DegreeCelsius),
-                                       Humidity = new UnitsNet.RelativeHumidity(double.Parse(split[2]), RelativeHumidityUnit.Percent)
-                                   });
-
-            }
-        }
 
         public IEnumerable<TempDetails> ReadingsByHour
         {
@@ -62,8 +45,6 @@ namespace Allotmen.Iot.Monitoring
                     if (lastReading == null || hour == lastReading.TimeTakenUtc.ToLocalTime().Hour)
                     {
                         hourCount++;
-                        totalTemp += r.Temperature.Value;
-                        totalHumidity += r.Humidity.Value;
                     }
                     else
                     {
@@ -74,8 +55,10 @@ namespace Allotmen.Iot.Monitoring
                             Humidity = new UnitsNet.RelativeHumidity(totalHumidity / hourCount, r.Humidity.Unit),
                         };
                         totalTemp = totalHumidity = 0f;
-                        hourCount = 0;
+                        hourCount = 1;
                     }
+                    totalTemp += r.Temperature.Value;
+                    totalHumidity += r.Humidity.Value;
                     lastReading = r;
                 }
 
@@ -123,7 +106,7 @@ namespace Allotmen.Iot.Monitoring
                 });
                 if (readTemp && details is not null)
                 {
-                    await File.AppendAllLinesAsync(FileForToday, new[] { $"{details.TimeTakenUtc:o},{details.Temperature.DegreesCelsius},{details.Humidity.Percent}" });
+                    await _iotFunctions.StoreReadingAsync(details);
                 }
                 ctx.RunAgainIn(readTemp ? TimeSpan.FromMinutes(1) : TimeSpan.FromSeconds(1));
                 return;
@@ -133,13 +116,6 @@ namespace Allotmen.Iot.Monitoring
                 _logger.LogError("Failed to read temp {0}", ex.Message);
             }
             ctx.RunAgainIn(TimeSpan.FromMinutes(1));
-        }
-        private string FileForToday
-        {
-            get
-            {
-                return $"/data/temp/{DateTime.Now:dd-MM-yyyy}.csv";
-            }
         }
     }
 }

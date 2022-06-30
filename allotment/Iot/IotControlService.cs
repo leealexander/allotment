@@ -21,10 +21,10 @@ namespace Allotment.Iot
     public class IotControlService : IIotControlService
     {
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
-        private readonly IIotFunctions _functions;
+        private readonly IIotMachine _functions;
         private readonly IJobManager _jobManager;
 
-        public IotControlService(IIotFunctions functions, IJobManager jobManager)
+        public IotControlService(IIotMachine functions, IJobManager jobManager)
         {
             _functions = functions;
             _jobManager = jobManager;
@@ -42,7 +42,10 @@ namespace Allotment.Iot
                 try
                 {
                     var doors = AreDoorsClosing ? "Doors closing" : "";
-                    doors = AreDoorsOpening ? "Doors opening" : "";
+                    if (string.IsNullOrWhiteSpace(doors))
+                    {
+                        doors = AreDoorsOpening ? "Doors opening" : "";
+                    }
                     if (string.IsNullOrWhiteSpace(doors))
                     {
                         doors = _functions.LastDoorCommand == null ? "Unknown door state" : _functions.LastDoorCommand.ToString();
@@ -59,7 +62,7 @@ namespace Allotment.Iot
 
         public async Task StopAllAsync()
         {
-            await _functions.TurnOffAllPinsAsync();
+            await _functions.TurnAllOffAsync();
         }
 
 

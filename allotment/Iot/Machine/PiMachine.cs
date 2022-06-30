@@ -1,28 +1,11 @@
 ﻿using Iot.Device.DHTxx;
 using System.Device.Gpio;
 using UnitsNet;
+using UnitsNet.Units;
 
-namespace Allotment.Iot
+namespace Allotment.Iot.Machine
 {
-    public enum LastDoorCommand{DoorsOpen, DoorsClosed}
-    public interface IIotFunctions
-    {
-        bool AreDoorsClosing { get; }
-        bool AreDoorsOpening { get; }
-        LastDoorCommand ?LastDoorCommand { get; }
-        bool IsWaterOn { get; }
-
-        public Task TurnOffAllPinsAsync();
-
-        Task DoorsCloseAsync();
-        Task DoorsOpenAsync();
-        bool IsPinOn(int pin);
-        Task<bool> TryGetTempDetailsAsync(Action<TempDetails> tempDetailsFound);
-        Task WaterOnAsync();
-        Task WaterOffAsync();
-    }
-
-    public class IotFunctions : IIotFunctions
+    public class PiMachine : IIotMachine
     {
         private const int _doorPinOpen = 26;
         private const int _doorPinClose = 19;
@@ -30,7 +13,7 @@ namespace Allotment.Iot
         private readonly TimeSpan _doorActionTimeDelay = TimeSpan.FromSeconds(50);
         private CancellationTokenSource _doorOpenCancel = new();
         private CancellationTokenSource _doorCloseCancel = new();
-        private LastDoorCommand ?_lastDoorCommand;
+        private LastDoorCommand? _lastDoorCommand;
 
         public async Task<bool> TryGetTempDetailsAsync(Action<TempDetails> tempDetailsFound)
         {
@@ -62,7 +45,7 @@ namespace Allotment.Iot
         public LastDoorCommand? LastDoorCommand => _lastDoorCommand;
 
 
-        public async Task TurnOffAllPinsAsync()
+        public async Task TurnAllOffAsync()
         {
             using GpioController controller = new();
             controller.OpenPin(_waterPin, PinMode.Output);
@@ -148,6 +131,39 @@ namespace Allotment.Iot
             controller.OpenPin(pin, PinMode.Output);
             return controller.Read(pin) == PinValue.Low;
         }
+
+        public List<TempDetails> GetDayReadings()
+        {
+            var readings = new List<TempDetails>();
+            if (File.Exists(FileForToday))
+            {
+                readings.AddRange(from fl in File.ReadAllLines(FileForToday)
+                                   let split = fl.Split(',')
+                                   where split.Length == 3
+                                   select new TempDetails
+                                   {
+                                       TimeTakenUtc = DateTime.Parse(split[0]).ToUniversalTime(),
+                                       Temperature = new UnitsNet.Temperature(double.Parse(split[1]), TemperatureUnit.DegreeCelsius),
+                                       Humidity = new UnitsNet.RelativeHumidity(double.Parse(split[2]), RelativeHumidityUnit.Percent)
+                                   });
+            }
+
+            return readings;
+        }
+
+        public async Task StoreReadingAsync(TempDetails details)
+        {
+            await File.AppendAllLinesAsync(FileForToday, new[] { $"{details.TimeTakenUtc:o},{details.Temperature.DegreesCelsius},{details.Humidity.Percent}" });
+        }
+
+        private string FileForToday
+        {
+            get
+            {
+                return $"/data/temp/{DateTime.Now:dd-MM-yyyy}.csv";
+            }
+        }
+
     }
     public record TempDetails
     {
