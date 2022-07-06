@@ -78,14 +78,9 @@ namespace Allotment.Iot.Machine
             return Task.CompletedTask;
         }
 
-        public Task WaterOnAsync()
+        public Task WaterOnAsync() 
         {
             _isWaterOn = true;
-            _jobManager.RunJobIn(_ctx =>
-            {
-                _isWaterOn = false;
-                return Task.CompletedTask;
-            }, _operationTimeSpan);
             return Task.CompletedTask;
         }
 

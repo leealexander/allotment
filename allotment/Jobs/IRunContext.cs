@@ -2,7 +2,8 @@
 {
     public interface IRunContext
     {
-        void RunAgainAt(DateTime nextRunUtc);
-        void RunAgainIn(TimeSpan duration);
+        CancellationToken CancellationToken { get; }
+        void RunAgainAt(DateTime nextRunUtc, CancellationToken cancellationToken = default); 
+        void RunAgainIn(TimeSpan duration, CancellationToken cancellationToken = default);
     }
 }

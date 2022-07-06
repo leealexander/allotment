@@ -17,26 +17,13 @@ namespace allotment.Pages
         public IndexModel(ILogger<IndexModel> logger, ITempMonitor tempMonitor, IIotControlService iotControlService)
         {
             _logger = logger;
-            _tempMonitor = tempMonitor;
+            _tempMonitor = tempMonitor; 
             _iotControlService = iotControlService;
             var readings = _tempMonitor.ReadingsByHour.ToArray();
             TempByHour = new HtmlString(string.Join(',', readings.Select(x => $"'{x?.Temperature.DegreesCelsius.ToString() ?? "null"}'")));
             HumidityByHour = new HtmlString(string.Join(',', readings.Select(x => $"'{x?.Humidity.Percent.ToString() ?? "null"}'")));
         }
 
-        public string TempDetails 
-        {
-            get
-            {
-                if (_tempMonitor.Current == null)
-                {
-                    return "No temperature readings available";
-                }
-                var t = _tempMonitor.Current;
-
-                return $"temp={t.Temperature}, hum={t.Humidity}, taken={t.TimeTakenUtc.ToLocalTime()}";
-            }
-        }
 
         public string Status => _iotControlService.Status.Textual;
 

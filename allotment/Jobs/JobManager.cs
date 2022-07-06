@@ -5,40 +5,42 @@ namespace Allotment.Jobs
 {
     public interface IJobManager: IDisposable
     {
-        void RunJob(JobHandler job, DateTime? startAtUtc = null);
-        void RunJobIn(JobHandler job, TimeSpan when);
+        void RunJob(JobHandler job, DateTime startAtUtc, CancellationToken cancellationToken = default);
+        void RunJobIn(JobHandler job, TimeSpan when, CancellationToken cancellationToken = default);
     }
 
     internal class JobManager : IJobManager, IHostedService
     {
         private readonly IServiceProvider _providor;
+        private readonly ILogger<JobManager> _logger;
         private readonly List<QueuedJob> _jobsToAdd = new();
         private readonly List<QueuedJob> _queuedJobs = new();
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private Task? _jobProcessorTask;
 
-        public JobManager(JobOptions options, IServiceProvider providor)
+        public JobManager(JobOptions options, IServiceProvider providor, ILogger<JobManager> logger)
         {
             _providor = providor;
+            _logger = logger;
             foreach (var serviceType in options.StartupList)
             {
                 var job = new ScopedJobRun(serviceType, providor);
-                _jobsToAdd.Add(new QueuedJob(DateTime.UtcNow, job.RunAsync));
+                _jobsToAdd.Add(new QueuedJob(DateTime.UtcNow, job.RunAsync, _cancellationTokenSource.Token));
             }
         }
 
-        public void RunJobIn(JobHandler job, TimeSpan when) => RunJob(job, DateTime.UtcNow + when);
+        public void RunJobIn(JobHandler job, TimeSpan when, CancellationToken cancellationToken = default) => RunJob(job, DateTime.UtcNow + when, cancellationToken);
 
 
-        public void RunJob(JobHandler job, DateTime? startAtUtc = null)
+        public void RunJob(JobHandler job, DateTime startAtUtc, CancellationToken cancellationToken = default)
         {
-            if (startAtUtc is null)
+            var qj = new QueuedJob(startAtUtc, job, cancellationToken);
+            if (DateTime.UtcNow >= startAtUtc)
             {
-                RunJobNow(job);
+                RunJobNow(qj);
             }
             else
             {
-                var qj = new QueuedJob(startAtUtc.Value, job);
                 AddJobToQueue(qj);
             }
         }
@@ -78,9 +80,27 @@ namespace Allotment.Jobs
             }
         }
 
-        private void RunJobNow(JobHandler job)
+        private void RunJobNow(QueuedJob queuedJob)
         {
-            Task.Run(() => job(new RunContext(this, job)));
+            Task.Run(() =>
+            {
+                try
+                {
+                    if (queuedJob.CancellationToken.IsCancellationRequested)
+                    {
+                        _logger.LogInformation($"Not starting job {queuedJob.Job} as it's cancelled");
+                    }
+                    else
+                    {
+                        using var cancellationSource = CancellationTokenSource.CreateLinkedTokenSource(_cancellationTokenSource.Token, queuedJob.CancellationToken);
+                        queuedJob.Job(new RunContext(this, queuedJob, cancellationSource.Token));
+                    }
+                }
+                catch(Exception ex)
+                {
+                    _logger.LogError(ex, $"Failed to start job {queuedJob.Job}");
+                }
+            });
         }
 
         private async Task DoWorkAsync()
@@ -116,7 +136,7 @@ namespace Allotment.Jobs
                     break;
                 }
                 _queuedJobs.RemoveAt(i);
-                RunJobNow(currentQueuedJob.Job);
+                RunJobNow(currentQueuedJob);
             }
         }
 
@@ -127,7 +147,7 @@ namespace Allotment.Jobs
                 if (_jobsToAdd.Count > 0)
                 {
                     var newCapacity = _jobsToAdd.Count + _queuedJobs.Count;
-                    if (newCapacity > _queuedJobs.Capacity)
+                    if (newCapacity > _queuedJobs.Capacity) 
                     {
                         _queuedJobs.Capacity = newCapacity;
                     }
@@ -144,45 +164,46 @@ namespace Allotment.Jobs
         private class RunContext : IRunContext
         {
             private readonly JobManager _jobManager;
-            private readonly JobHandler _job;
+            private readonly QueuedJob _oldQueuedJob;
             private QueuedJob? _queuedJob = null;
 
-            public RunContext(JobManager jobManager, JobHandler job)
+            public RunContext(JobManager jobManager, QueuedJob oldQueuedJob, CancellationToken cancellationToken)
             {
                 _jobManager = jobManager;
-                _job = job;
+                _oldQueuedJob = oldQueuedJob;
+                CancellationToken = cancellationToken;  
             }
 
-            public void RunAgainIn(TimeSpan duration) => RunAgainAt(DateTime.UtcNow + duration);
+
+            public CancellationToken CancellationToken { get; }
+
+            public void RunAgainIn(TimeSpan duration, CancellationToken cancellationToken = default) => RunAgainAt(DateTime.UtcNow + duration, cancellationToken);
 
 
-            public void RunAgainAt(DateTime nextRunUtc)
+            public void RunAgainAt(DateTime nextRunUtc, CancellationToken cancellationToken = default)
             {
                 if (_queuedJob != null)
                 {
                     throw new NotSupportedException("Once set you cannot change the next run");
                 }
-                _queuedJob = new QueuedJob(nextRunUtc, _job);
+                if(cancellationToken == default)
+                {
+                    cancellationToken = _oldQueuedJob.CancellationToken;
+                }
+                _queuedJob = new QueuedJob(nextRunUtc, _oldQueuedJob.Job, cancellationToken);
                 _jobManager.AddJobToQueue(_queuedJob);
             }
-        }
-
-        private record QueuedJob
-        {
-            public QueuedJob(DateTime startTimeUtc, JobHandler job)
-            {
-                StartTimeUtc = startTimeUtc;
-                Job = job;
-            }
-
-            public DateTime StartTimeUtc { get; set; }
-            public JobHandler Job { get; set; }
         }
 
         private class ScopedJobRun : IJobService
         {
             private readonly Type _typeToCreate;
             private readonly IServiceProvider _serviceProvider;
+
+            public override string ToString()
+            {
+                return $"Job for {_typeToCreate.Name}";
+            }
 
             public ScopedJobRun(Type typeToCreate, IServiceProvider serviceProvider)
             {
@@ -196,6 +217,19 @@ namespace Allotment.Jobs
                 var jobService = (IJobService)scope.ServiceProvider.GetRequiredService(_typeToCreate);
                 await jobService.RunAsync(ctx);
             }
+        }
+        private class QueuedJob
+        {
+            public QueuedJob(DateTime startTimeUtc, JobHandler job, CancellationToken cancellationToken)
+            {
+                StartTimeUtc = startTimeUtc;
+                Job = job;
+                CancellationToken = cancellationToken;
+            }
+
+            public CancellationToken CancellationToken { get; set; }
+            public DateTime StartTimeUtc { get; }
+            public JobHandler Job { get; }
         }
     }
 }

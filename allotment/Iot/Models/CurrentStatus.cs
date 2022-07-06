@@ -5,7 +5,8 @@
         public bool DoorsOpening { get; set; }
         public bool DoorsClosing { get; set; }
         public bool WaterOn { get; set; }
-        public TempDetails Temp { get; set; }
-        public string Textual { get; set; }
+        public TempDetails ?Temp { get; set; } = null;
+        public string Textual { get; set; } = "";
     }
 }
+ 

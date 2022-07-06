@@ -12,16 +12,19 @@ namespace Allotment.Iot
         Task DoorsOpenAsync();
         Task WaterOnAsync(TimeSpan duration);
         Task WaterOffAsync();
-        Task StopAllAsync();
+        Task StopAllAsync(); 
 
         public CurrentStatus Status { get; }
     }
 
-    public class IotControlService : IIotControlService
+    public class IotControlService : IIotControlService, IDisposable
     {
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private readonly IIotMachine _functions;
         private readonly IJobManager _jobManager;
+        private TimeSpan _waterOnDuration;
+        private DateTime ?_waterOnTimeUtc = null;
+        private CancellationTokenSource _waterOffCancellation = null;
 
         public IotControlService(IIotMachine functions, IJobManager jobManager)
         {
@@ -56,7 +59,7 @@ namespace Allotment.Iot
                     {
                         doors = _functions.LastDoorCommand == null ? "Unknown door state" : _functions.LastDoorCommand.ToString();
                     }
-                    var water = status.WaterOn ? "Water is on" : "Water is off";
+                    var water = status.WaterOn ? $"Water is on TTL: {WaterTimeLeft()} " : "Water is off";
                     status.Textual = $"{doors} - {water}";
                 }
                 catch(Exception ex )
@@ -66,6 +69,17 @@ namespace Allotment.Iot
 
                 return status;
             }
+        }
+
+        private string WaterTimeLeft()
+        {
+            if (_waterOnTimeUtc.HasValue)
+            {
+                var left = _waterOnDuration - (DateTime.UtcNow - _waterOnTimeUtc.Value);
+                return $"{(int)left.TotalMinutes} mins {(int)left.Seconds} secs";
+            }
+
+            return "";
         }
 
         public async Task StopAllAsync()
@@ -84,12 +98,28 @@ namespace Allotment.Iot
         }
         public async Task WaterOnAsync(TimeSpan duration)
         {
-            await _functions.WaterOnAsync();
-            _jobManager.RunJobIn(ctx => _functions.WaterOffAsync(), duration);
+            if (!_functions.IsWaterOn) 
+            {
+                if(_waterOffCancellation is not null)
+                {
+                    _waterOffCancellation.Cancel();
+                    _waterOffCancellation.Dispose();
+                }
+                await _functions.WaterOnAsync();
+                _waterOnDuration = duration;
+                _waterOnTimeUtc = DateTime.UtcNow;
+                _waterOffCancellation = new CancellationTokenSource();
+                _jobManager.RunJobIn(ctx => _functions.WaterOffAsync(), duration, _waterOffCancellation.Token);
+            }
         }
         public async Task WaterOffAsync()
         {
             await _functions.WaterOffAsync();
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
         }
     }
 }
