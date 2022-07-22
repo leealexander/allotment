@@ -46,7 +46,7 @@ namespace allotment.Pages
 
         public async Task<IActionResult> OnPostWaterOn()
         {
-            await _iotControlService.WaterOnAsync(TimeSpan.FromMinutes(10));
+            await _iotControlService.WaterOnAsync(TimeSpan.FromMinutes(5));
             return Redirect("/");
         }
 
