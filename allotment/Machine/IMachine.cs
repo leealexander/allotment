@@ -1,29 +1,27 @@
-﻿using Allotment.Iot.Machine;
-using Allotment.Iot.Models;
+﻿using Allotment.Machine.Models;
 
-namespace Allotment.Iot
+namespace Allotment.Machine
 {
     public enum LastDoorCommand { DoorsOpen, DoorsClosed }
-    public interface IIotMachine: ITemperatureSupport
+    public interface IMachine
     {
         bool AreDoorsClosing { get; }
         bool AreDoorsOpening { get; }
         LastDoorCommand? LastDoorCommand { get; }
         bool IsWaterOn { get; }
+        bool IsWaterLevelSensorOn { get; }
 
         Task DoorsCloseAsync();
         Task DoorsOpenAsync();
         Task WaterOnAsync();
         Task WaterOffAsync();
 
+        Task WaterLevelSensorPowerOnAsync();
+        Task WaterLevelSensorPowerOffAsync();
+
         public Task TurnAllOffAsync();
 
-    }
 
-    public interface ITemperatureSupport
-    {
         Task<bool> TryGetTempDetailsAsync(Action<TempDetails> tempDetailsFound);
-        List<TempDetails> GetDayReadings();
-        Task StoreReadingAsync(TempDetails details);
     }
 }

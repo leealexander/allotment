@@ -1,10 +1,11 @@
-﻿namespace Allotment.Iot.Models
+﻿namespace Allotment.Machine.Models
 {
-    public class CurrentStatus
+    public record CurrentStatus
     {
         public bool DoorsOpening { get; set; }
         public bool DoorsClosing { get; set; }
         public bool WaterOn { get; set; }
+        public bool WaterSensorOn { get; set; }
         public TempDetails ?Temp { get; set; } = null;
         public string Textual { get; set; } = "";
     }

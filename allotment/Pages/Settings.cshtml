@@ -1,0 +1,21 @@
+﻿@page
+@model Allotment.Pages.SettingsModel
+@{
+}
+
+<form method="post">
+    <div class="form-horizontal">
+        <div class="form-group">
+            <div class="col-md-6">
+                @Html.TextAreaFor(x => x.Settings, 20, 20, new{ @class="form-control", spellcheck=false, required=true })
+                @Html.ValidationMessageFor(x => x.Settings)
+            </div>
+        </div>
+    </div>
+    <button class="btn btn-link text-decoration-none" name="Action" value="Save">
+        Save changes
+    </button>
+    <button class="btn btn-link text-decoration-none" name="Action" value="Reset">
+        Reset to defaults
+    </button>
+</form>

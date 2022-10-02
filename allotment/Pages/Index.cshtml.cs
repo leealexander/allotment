@@ -1,9 +1,8 @@
-﻿using Allotmen.Iot.Monitoring;
-using Allotment.Iot;
+﻿using Allotment.Machine;
+using Allotment.Machine.Monitoring;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Collections.Generic;
 
 namespace allotment.Pages
 {
@@ -11,21 +10,21 @@ namespace allotment.Pages
     {
         private readonly ILogger<IndexModel> _logger;
         private readonly ITempMonitor _tempMonitor;
-        private readonly IIotControlService _iotControlService;
+        private readonly IMachineControlService _machineControlService;
 
 
-        public IndexModel(ILogger<IndexModel> logger, ITempMonitor tempMonitor, IIotControlService iotControlService)
+        public IndexModel(ILogger<IndexModel> logger, ITempMonitor tempMonitor, IMachineControlService machineControlService)
         {
             _logger = logger;
             _tempMonitor = tempMonitor; 
-            _iotControlService = iotControlService;
+            _machineControlService = machineControlService;
             var readings = _tempMonitor.ReadingsByHour.ToArray();
             TempByHour = new HtmlString(string.Join(',', readings.Select(x => $"'{x?.Temperature.DegreesCelsius.ToString() ?? "null"}'")));
             HumidityByHour = new HtmlString(string.Join(',', readings.Select(x => $"'{x?.Humidity.Percent.ToString() ?? "null"}'")));
         }
 
 
-        public string Status => _iotControlService.Status.Textual;
+        public string Status => _machineControlService.Status.Textual;
 
         public HtmlString Labels => new HtmlString(string.Join(',',Enumerable.Range(0, 24).Select(x => $"'{x:D2}'")));
 
@@ -34,31 +33,31 @@ namespace allotment.Pages
 
         public async Task<IActionResult> OnPostDoorsOpen()
         {
-            await _iotControlService.DoorsOpenAsync();
+            await _machineControlService.DoorsOpenAsync();
             return Redirect("/");
         }
 
         public async Task<IActionResult> OnPostDoorsClose()
         {
-            await _iotControlService.DoorsCloseAsync();
+            await _machineControlService.DoorsCloseAsync();
             return Redirect("/");
         }
 
         public async Task<IActionResult> OnPostWaterOn()
         {
-            await _iotControlService.WaterOnAsync(TimeSpan.FromMinutes(5));
+            await _machineControlService.WaterOnAsync();
             return Redirect("/");
         }
 
         public async Task<IActionResult> OnPostWaterOff()
         {
-            await _iotControlService.WaterOffAsync();
+            await _machineControlService.WaterOffAsync();
             return Redirect("/");
         }
 
         public async Task<IActionResult> OnPostStopAll()
         {
-            await _iotControlService.StopAllAsync();
+            await _machineControlService.StopAllAsync();
             return Redirect("/");
         }
     }

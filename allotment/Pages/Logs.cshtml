@@ -1,0 +1,27 @@
+﻿@page
+@model Allotment.Pages.LogModel
+@{
+}
+
+
+<h1>Logs Today</h1>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Area</th>
+            <th scope="col">Message</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var e in Model.Logs)
+        {
+            <tr>
+                <td>@e.EventDateUtc.Value.ToLocalTime()</td>
+                <td>@e.Area</td>
+                <td>@e.Message</td>
+            </tr>
+        }
+    </tbody>
+</table>

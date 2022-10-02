@@ -1,8 +1,9 @@
-﻿using Allotment.Iot;
-using Allotment.Iot.Models;
+﻿using Allotment.Machine;
+using Allotment.Machine.Models;
 using Allotment.Jobs;
+using Allotment.DataStores;
 
-namespace Allotmen.Iot.Monitoring
+namespace Allotment.Machine.Monitoring
 {
     public interface ITempMonitor
     {
@@ -12,15 +13,17 @@ namespace Allotmen.Iot.Monitoring
 
     public class TempMonitor : IJobService, ITempMonitor
     {
-        private readonly IIotMachine _iotFunctions;
+        private readonly IMachine _machine;
+        private readonly ITempStore _tempStore;
         private readonly List<TempDetails> _readings = new();
         private readonly ILogger<TempMonitor> _logger;
 
-        public TempMonitor(ILogger<TempMonitor> logger, IIotMachine iotFunctions)
+        public TempMonitor(ILogger<TempMonitor> logger, IMachine machine, ITempStore tempStore)
         {
             _logger = logger;
-            _iotFunctions = iotFunctions;
-            _readings = _iotFunctions.GetDayReadings();
+            _machine = machine;
+            _tempStore = tempStore;
+            _readings = _tempStore.GetDayReadings();
         }
 
 
@@ -87,8 +90,8 @@ namespace Allotmen.Iot.Monitoring
         {
             try
             {
-                TempDetails details = null;
-                var readTemp = await _iotFunctions.TryGetTempDetailsAsync(x =>
+                TempDetails ?details = default;
+                var readTemp = await _machine.TryGetTempDetailsAsync(x =>
                 {
                     details = x;
                     lock (_readings)
@@ -106,7 +109,7 @@ namespace Allotmen.Iot.Monitoring
                 });
                 if (readTemp && details is not null)
                 {
-                    await _iotFunctions.StoreReadingAsync(details);
+                    await _tempStore.StoreReadingAsync(details);
                 }
                 ctx.RunAgainIn(readTemp ? TimeSpan.FromMinutes(1) : TimeSpan.FromSeconds(1));
                 return;

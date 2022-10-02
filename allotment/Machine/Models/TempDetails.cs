@@ -1,6 +1,6 @@
 ﻿using UnitsNet;
 
-namespace Allotment.Iot.Models
+namespace Allotment.Machine.Models
 {
     public record TempDetails
     {

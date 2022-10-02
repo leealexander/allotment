@@ -1,9 +1,11 @@
-using Allotmen.Iot.Monitoring;
-using Allotment.Iot;
+using Allotment.Machine;
 using Allotment.Jobs;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
+using Allotment.Machine.Monitoring;
+using Allotment.DataStores;
+using Allotment;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,10 +41,13 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddRazorPages()
     .AddMicrosoftIdentityUI();
 
-builder.Services.AddIot(builder.Environment.IsDevelopment());
+builder.Services.AddMachine(builder.Environment.IsDevelopment());
 builder.Services.AddJobs()
-    .StartWith<IotStartup>()
-    .StartWith<TempMonitor>();
+    .StartWith<MachineStartup>()
+    .StartWith<TempMonitor>()
+    .StartWith<WaterLevelMonitor>();
+builder.Services.AddDataStores();
+builder.Services.AddTransient(typeof(IAuditLogger<>), typeof(AuditLogger<>));
 
 var app = builder.Build();
 
@@ -70,7 +75,7 @@ app.UseAuthorization();
 app.MapRazorPages();
 app.MapControllers();
 
-app.MapGet("/api/status", (IIotControlService iotService) =>
+app.MapGet("/api/status", (IMachineControlService iotService) =>
 {
     var status = iotService.Status;
 

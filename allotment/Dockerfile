@@ -11,17 +11,17 @@ ENV TZ="Europe/London"
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["allotment/allotment.csproj", "allotment/"]
-RUN dotnet restore "allotment/allotment.csproj"
+RUN dotnet restore "allotment/Allotment.csproj"
 COPY . .
 WORKDIR "/src/allotment"
-RUN dotnet build "allotment.csproj" -c Release -o /app/build
+RUN dotnet build "Allotment.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "allotment.csproj" -c Release -o /app/publish
+RUN dotnet publish "Allotment.csproj" -c Release -o /app/publish
 RUN apt update
 RUN apt-get install -y procps && rm -rf /var/lib/apt/lists/*
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "allotment.dll"]
+ENTRYPOINT ["dotnet", "Allotment.dll"]
 #ENTRYPOINT ["tail", "-f", "/dev/null"]
