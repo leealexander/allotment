@@ -6,22 +6,48 @@
 
 <h1>Logs Today</h1>
 
+<form id="get-logs-form" method="Post">
+    <input name="SelectedDate" value="@Model.SelectedDate.ToShortDateString()" id="selected-date" data-provide="datepicker" />
+    <button id="get-logs-button" class="btn btn-link">
+        Select date
+    </button>
+ </form>
+
 <table class="table table-hover">
     <thead>
         <tr>
             <th scope="col">Date</th>
-            <th scope="col">Area</th>
             <th scope="col">Message</th>
+            <th scope="col">Area</th>
         </tr>
     </thead>
     <tbody>
         @foreach(var e in Model.Logs)
         {
             <tr>
-                <td>@e.EventDateUtc.Value.ToLocalTime()</td>
-                <td>@e.Area</td>
+                <td>@(e.EventDateUtc.HasValue ? e.EventDateUtc.Value.ToLocalTime() : "NULL")</td>
                 <td>@e.Message</td>
+                <td>@e.Area</td>
             </tr>
         }
     </tbody>
 </table>
+
+
+@section scripts
+{
+    <script>
+        var control = $('#selected-date');
+        control.datepicker({
+            todayBtn: true,
+            todayHighlight: true,
+            autoclose: true,
+        });
+        control.on('changeDate', function (ev) {
+            $('#get-logs-form').submit();
+        });
+        $(document).ready(function () {
+            $('#get-logs-button').hide();
+        });
+    </script>
+}

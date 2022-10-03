@@ -25,7 +25,7 @@
 
             var replacements = new[]
             {
-                ("dd-mm-yyyy", $"{date:dd-MM-yyyy}"),
+                ("$date", $"{date:dd-MM-yyyy}"),
             };
 
             string fileName = _fileName;

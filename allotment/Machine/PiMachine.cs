@@ -58,7 +58,7 @@ namespace Allotment.Machine
 
         public async Task WaterLevelSensorPowerOnAsync()
         {
-            await _auditLogger.LogAsync("Water butt pressure on.");
+            await _auditLogger.LogAsync("Water butt level sensor on.");
             using GpioController controller = new();
             controller.OpenPin(_waterLevelSensorPowerPin, PinMode.Output);
             controller.Write(_waterLevelSensorPowerPin, PinValue.Low);
@@ -67,7 +67,7 @@ namespace Allotment.Machine
 
         public async Task WaterLevelSensorPowerOffAsync()
         {
-            await _auditLogger.LogAsync("Water butt pressure off.");
+            await _auditLogger.LogAsync("Water butt level sensor off.");
             using GpioController controller = new();
             controller.OpenPin(_waterLevelSensorPowerPin, PinMode.Output);
             controller.Write(_waterLevelSensorPowerPin, PinValue.High);

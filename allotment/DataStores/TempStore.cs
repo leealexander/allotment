@@ -12,7 +12,7 @@ namespace Allotment.DataStores
 
     public class TempStore : DataStore, ITempStore
     {
-        public TempStore(): base("temp/dd-mm-yyyy.csv")
+        public TempStore(): base("temp/$date.csv")
         {
         }
 

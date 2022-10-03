@@ -23,5 +23,5 @@ RUN apt-get install -y procps && rm -rf /var/lib/apt/lists/*
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-#ENTRYPOINT ["dotnet", "allotment.dll"]
-ENTRYPOINT ["tail", "-f", "/dev/null"]
+ENTRYPOINT ["dotnet", "allotment.dll"]
+#ENTRYPOINT ["tail", "-f", "/dev/null"]

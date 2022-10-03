@@ -113,13 +113,13 @@ namespace Allotment.Machine
 
         public async Task WaterLevelSensorPowerOnAsync()
         {
-            await _auditLogger.LogAsync("Water butt pressure on.");
+            await _auditLogger.LogAsync("Water butt level sensor on.");
             _isWaterLevelMonitorOn = true;
         }
 
         public async Task WaterLevelSensorPowerOffAsync()
         {
-            await _auditLogger.LogAsync("Water butt pressure off.");
+            await _auditLogger.LogAsync("Water butt level sensor off.");
             _isWaterLevelMonitorOn = false;
         }
     }
