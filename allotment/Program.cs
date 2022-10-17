@@ -15,20 +15,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(options =>
     {
-        builder.Configuration.GetSection("AzureAD").Bind(options);
+        builder.Configuration.GetSection("AzureAD").Bind(options); 
         options.CorrelationCookie.SameSite = SameSiteMode.None;
 
         options.Events.OnRedirectToIdentityProvider = ctx =>
         {
-            if (!ctx.ProtocolMessage.RedirectUri.Contains("//localhost", StringComparison.InvariantCultureIgnoreCase))
-            {
-                var uriBuilder = new UriBuilder(ctx.ProtocolMessage.RedirectUri)
-                {
-                    Scheme = Uri.UriSchemeHttps,
-                    Port = 2280
-                };
-                ctx.ProtocolMessage.RedirectUri = uriBuilder.ToString();
-            }
+            ctx.ProtocolMessage.RedirectUri = builder.Configuration["AuthCallbackUrl"];
             return Task.CompletedTask;
         };
     });

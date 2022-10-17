@@ -6,7 +6,8 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 RUN apt update && apt install tzdata -y
-ENV TZ="Europe/London"
+RUN apt-get update && apt-get install -y procps && rm -rf /var/lib/apt/lists/*
+ENV TZ="Europe/London" 
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
