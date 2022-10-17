@@ -6,22 +6,23 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 RUN apt update && apt install tzdata -y
-ENV TZ="Europe/London"
+RUN apt-get update && apt-get install -y procps && rm -rf /var/lib/apt/lists/*
+ENV TZ="Europe/London" 
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["allotment/allotment.csproj", "allotment/"]
-RUN dotnet restore "allotment/Allotment.csproj"
+RUN dotnet restore "allotment/allotment.csproj"
 COPY . .
 WORKDIR "/src/allotment"
-RUN dotnet build "Allotment.csproj" -c Release -o /app/build
+RUN dotnet build "allotment.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Allotment.csproj" -c Release -o /app/publish
+RUN dotnet publish "allotment.csproj" -c Release -o /app/publish
 RUN apt update
 RUN apt-get install -y procps && rm -rf /var/lib/apt/lists/*
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Allotment.dll"]
+ENTRYPOINT ["dotnet", "allotment.dll"]
 #ENTRYPOINT ["tail", "-f", "/dev/null"]

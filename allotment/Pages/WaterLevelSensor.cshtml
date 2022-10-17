@@ -3,11 +3,52 @@
 @{
 }
 
-<h1>Water level sensor</h1>
+<h1>Water level sensor readings @(Model.IsWaterSensorOn ? "(Sensor is on)" : "(Sensor is off)")</h1>
 
+<div class="text-center">
+    <h1 id="heading" class="display-4">Welcome</h1>
+    <canvas class="my-4 w-100 chartjs-render-monitor" id="myChart" style="display: block; width: 2085px; height: 880px;" width="2085" height="880"></canvas>
+</div>
 
-<form method="post">
-    <button class="btn btn-link text-decoration-none">
-        Turn sensor on
-    </button>
-</form>
+@if (Model.IsWaterSensorOn)
+{
+    <form method="post">
+        <div class="form-group">
+            <label asp-for="KnownDepthCm">Enter Known Depth cm:</label>
+            <input asp-for="KnownDepthCm" />
+        </div>
+        <span asp-validation-for="KnownDepthCm"></span>
+
+        <div class="mt-3">
+            <button type="submit" value="Submit" class="btn btn-primary">
+                Take a water level reading
+            </button>
+        </div>
+    </form>
+}
+
+@section scripts
+{
+    <script>
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [@Model.GraphLabels],
+                datasets: [{
+                    label: 'Pressure',
+                    borderColor: "#bae755",
+                    data: [@Model.GraphPressureReadings],
+                }
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+}

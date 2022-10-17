@@ -25,7 +25,7 @@ namespace Allotment.Pages
         {
             await SetSettingsModelValueAsync();
         }
-        public async Task OnPost()
+        public async Task<IActionResult> OnPost()
         {
             try
             {
@@ -52,11 +52,14 @@ namespace Allotment.Pages
                         await SetSettingsModelValueAsync();
                         break;
                 }
+
+                return RedirectToPage();
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("Settings", ex.Message);
             }
+            return Page();
         }
 
         private async Task SetSettingsModelValueAsync()

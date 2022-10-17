@@ -14,7 +14,7 @@ namespace Allotment.DataStores
 
     public class LogsStore : DataStore, ILogsStore
     {
-        public LogsStore() : base("logs/dd-mm-yyyy.csv")
+        public LogsStore() : base("logs/$date.csv")
         {
         }
 

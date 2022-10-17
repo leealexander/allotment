@@ -1,6 +1,8 @@
 ﻿using Allotment.Machine.Models;
 using Allotment.Jobs;
 using UnitsNet;
+using Allotment.DataStores;
+using Allotment.Machine.Monitoring.Models;
 
 namespace Allotment.Machine
 {
@@ -8,6 +10,7 @@ namespace Allotment.Machine
     {
         private readonly IJobManager _jobManager;
         private readonly IAuditLogger<FakeMachine> _auditLogger;
+        private readonly IWaterLevelStore _waterLevelStore;
         private bool _isClosing = false;
         private bool _isOpening = false;
         private bool _isWaterOn = false;
@@ -16,10 +19,26 @@ namespace Allotment.Machine
         private int[] _dayTemp = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23 };
         private int[] _dayHum = new[] { 70, 72, 76, 78, 80, 82, 84, 90, 89, 84, 75, 70, 68, 67, 66, 65, 65, 58, 62, 63, 65, 67, 68 };
 
-        public FakeMachine(IJobManager jobManager, IAuditLogger<FakeMachine> auditLogger)
+        private int[] _samplePressureReadings = new[] 
+        {
+            4081, // 4cm
+            4124, // 30cm
+            4122, // 28cm
+            4121, // 26cm
+            4119, // 24cm
+            4116, // 22cm
+            4109, // 20cm
+            4098, // 10cm
+            4084, // 05cm
+            4123, // 30cm
+        };
+        private int _samplePressureReadingsIndex = 0;
+
+        public FakeMachine(IJobManager jobManager, IAuditLogger<FakeMachine> auditLogger, IWaterLevelStore waterLevelStore)
         {
             _jobManager = jobManager;
             _auditLogger = auditLogger;
+            _waterLevelStore = waterLevelStore;
         }
 
         public bool AreDoorsClosing => _isClosing;
@@ -113,13 +132,14 @@ namespace Allotment.Machine
 
         public async Task WaterLevelSensorPowerOnAsync()
         {
-            await _auditLogger.LogAsync("Water butt pressure on.");
+            await _auditLogger.LogAsync("Water butt level sensor on.");
             _isWaterLevelMonitorOn = true;
+            await _waterLevelStore.StoreReadingAsync( new WaterLevelReadingModel { DateTakenUtc = DateTime.UtcNow, Reading = _samplePressureReadings[_samplePressureReadingsIndex++] });
         }
 
         public async Task WaterLevelSensorPowerOffAsync()
         {
-            await _auditLogger.LogAsync("Water butt pressure off.");
+            await _auditLogger.LogAsync("Water butt level sensor off.");
             _isWaterLevelMonitorOn = false;
         }
     }

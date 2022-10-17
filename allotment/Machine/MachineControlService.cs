@@ -1,6 +1,8 @@
 ﻿using Allotment.Machine.Models;
 using Allotment.Jobs;
 using Allotment.DataStores;
+using Allotment.Machine.Monitoring.Models;
+using System.Collections.Concurrent;
 
 namespace Allotment.Machine
 {
@@ -16,7 +18,8 @@ namespace Allotment.Machine
         Task WaterOffAsync();
         Task StopAllAsync();
 
-        Task WaterLevelMonitorOnAsync();
+        Task WaterLevelMonitorOnAsync( int ?knownWaterHeightCm = null );
+        void StoreWaterLevelReading(DateTime dateTakenUtc, int reading);
 
         public CurrentStatus Status { get; }
     }
@@ -28,18 +31,21 @@ namespace Allotment.Machine
         private readonly IJobManager _jobManager;
         private readonly ITempStore _tempStore;
         private readonly ISettingsStore _settingsStore;
+        private readonly IWaterLevelStore _waterLevelStore;
         private TimeSpan _waterOnDuration;
         private DateTime ?_waterOnTimeUtc = null;
         private DateTime? _waterLevelOnUtc = null;
         private CancellationTokenSource ?_waterOffCancellation = null;
         private CancellationTokenSource? _waterLevelSensorOffCancellation = null;
+        private ConcurrentBag<WaterLevelReadingModel> _currentSessionWaterLevelReadings = new();
 
-        public MachineControlService(IMachine machine, IJobManager jobManager, ITempStore tempStore, ISettingsStore settingsStore)
+        public MachineControlService(IMachine machine, IJobManager jobManager, ITempStore tempStore, ISettingsStore settingsStore, IWaterLevelStore waterLevelStore)
         {
             _machine = machine;
             _jobManager = jobManager;
             _tempStore = tempStore;
             _settingsStore = settingsStore;
+            _waterLevelStore = waterLevelStore;
         }
 
 
@@ -84,7 +90,19 @@ namespace Allotment.Machine
             }
         }
 
-        public async Task WaterLevelMonitorOnAsync()
+        public void StoreWaterLevelReading(DateTime dateTakenUtc, int reading)
+        {
+            if (_machine.IsWaterLevelSensorOn)
+            {
+                _currentSessionWaterLevelReadings.Add(new WaterLevelReadingModel
+                {
+                    DateTakenUtc = dateTakenUtc,
+                    Reading = reading
+                });
+            }
+        }
+
+        public async Task WaterLevelMonitorOnAsync(int? knownWaterHeightCm = null)
         {
             if(!_machine.IsWaterLevelSensorOn)
             {
@@ -98,7 +116,17 @@ namespace Allotment.Machine
                 await _machine.WaterLevelSensorPowerOnAsync();
 
                 _waterLevelSensorOffCancellation = new CancellationTokenSource();
-                _jobManager.RunJobIn(ctx => _machine.WaterLevelSensorPowerOffAsync(), settings.WaterLevelSensor.PoweredOnDuration, _waterLevelSensorOffCancellation.Token);
+                _currentSessionWaterLevelReadings.Clear();
+                _jobManager.RunJobIn(async ctx =>
+                {
+                    await _machine.WaterLevelSensorPowerOffAsync();
+                    if (knownWaterHeightCm.HasValue)
+                    {
+                        await _waterLevelStore.ApplyKnownWaterLevelAsync(knownWaterHeightCm.Value);
+                    }
+
+                    _currentSessionWaterLevelReadings.Clear();
+                }, settings.Irrigation.WaterLevelSensor.PoweredOnDuration, _waterLevelSensorOffCancellation.Token);
             }
         }
 

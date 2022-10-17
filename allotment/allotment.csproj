@@ -7,7 +7,7 @@
     <UserSecretsId>aspnet-allotment-54C2565B-09AF-41FD-84E7-ED065E82D164</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <RootNamespace>Allotment</RootNamespace>
-    <AssemblyName>Allotment</AssemblyName>
+    <AssemblyName>allotment</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
