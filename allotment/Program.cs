@@ -6,6 +6,8 @@ using Microsoft.Identity.Web.UI;
 using Allotment.Machine.Monitoring;
 using Allotment.DataStores;
 using Allotment;
+using Allotment.Services;
+using Allotment.ApiModels;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,6 +49,7 @@ builder.Services.AddJobs()
     .StartWith<TempMonitor>()
     .StartWith<WaterLevelMonitor>();
 builder.Services.AddDataStores();
+builder.Services.AddAllotmentServices();
 builder.Services.AddTransient(typeof(IAuditLogger<>), typeof(AuditLogger<>));
 
 var app = builder.Build();
@@ -90,5 +93,6 @@ app.MapGet("/api/status", (IMachineControlService iotService) =>
         WaterOn = status.WaterOn
     });
 });
+
 
 app.Run();

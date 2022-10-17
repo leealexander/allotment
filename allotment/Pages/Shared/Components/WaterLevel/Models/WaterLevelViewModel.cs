@@ -5,6 +5,6 @@ namespace Allotment.Pages.Shared.Components.WaterLevel.Models
 {
     public class WaterLevelViewModel
     {
-        public WaterLevelReadingModel ?Reading { get; set; }
+        public string ?WaterLevelStatus { get; set; }
     }
 }

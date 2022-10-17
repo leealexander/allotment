@@ -23,7 +23,7 @@ namespace Allotment.Machine.Monitoring
                 await _machineService.WaterLevelMonitorOnAsync();
             }
             _firstTime = false;
-            ctx.RunAgainIn((await _settingsStore.GetAsync()).WaterLevelSensor.PeriodicCheckDuration);
+            ctx.RunAgainIn((await _settingsStore.GetAsync()).Irrigation.WaterLevelSensor.PeriodicCheckDuration);
         }
     }
 }

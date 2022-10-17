@@ -7,15 +7,17 @@
     <div class="form-horizontal">
         <div class="form-group">
             <div class="col-md-6">
-                @Html.TextAreaFor(x => x.Settings, 20, 20, new{ @class="form-control", spellcheck=false, required=true })
-                @Html.ValidationMessageFor(x => x.Settings)
+                <textarea asp-for="Settings" rows="20" cols="20" spellcheck="false" class="form-control" required=true></textarea>
+                <span asp-validation-for="Settings"></span>
             </div>
         </div>
     </div>
-    <button class="btn btn-link text-decoration-none" name="Action" value="Save">
-        Save changes
-    </button>
-    <button class="btn btn-link text-decoration-none" name="Action" value="Reset">
-        Reset to defaults
-    </button>
+    <div class="mt-3">
+        <button type="submit"  class="btn btn-primary" name="Action" value="Save">
+            Save changes
+        </button>
+        <button type="submit" class="btn btn-secondary" name="Action" value="Reset">
+            Reset to defaults
+        </button>
+    </div>
 </form>
