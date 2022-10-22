@@ -1,6 +1,8 @@
 using Allotment.DataStores;
+using Allotment.DataStores.Models;
 using Allotment.Machine;
 using Allotment.Machine.Monitoring.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -52,16 +54,6 @@ namespace Allotment.Pages
             {
                 await _machineControlService.WaterLevelMonitorOnAsync(KnownDepthCm.Value);
             }
-        }
-
-        public Task<IActionResult> OnPostReadings(int reading, DateTime startTimeUtc)
-        {
-            _machineControlService.StoreWaterLevelReading(reading, startTimeUtc);
-            return Task.FromResult(new ContentResult()
-            {
-                Content = "read",
-                StatusCode = (int)HttpStatusCode.Created
-            });
         }
     }
 }

@@ -4,6 +4,7 @@
     {
         public DoorsSettingsModel Doors { get; set; } = new();
         public IrrigationSettingsModel Irrigation { get; set; } = new();
+        public string ApiJwtSecret { get; set; } = Guid.NewGuid().ToString();
     }
     public record DoorsSettingsModel
     {
@@ -18,7 +19,6 @@
 
     public record WaterLevelSensorSettingsModel
     {
-        public string ReadingAccessKey { get; set; } = Guid.NewGuid().ToString();
         public int WaterSourceMaxDepthCm { get; set; } = 100;
 
         public TimeSpan PoweredOnDuration { get; set; } = TimeSpan.FromMinutes(3);

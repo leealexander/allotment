@@ -22,8 +22,10 @@ constexpr int READY_PIN = 3;
 #define IRAM_ATTR
 #endif
 
-char g_polyServer[256] = {0};
-WiFiManagerParameter g_urlParam("server", "Polly posting URL", g_polyServer, sizeof(g_polyServer) / sizeof(char));
+String g_polyServer;
+String g_polyApiKey;
+WiFiManagerParameter g_urlParam("server", "Polly posting URL", "", 256);
+WiFiManagerParameter g_apiKeyParam("apiKey", "Polly posting ApiKey","", 256);
 
 WiFiManager g_wifiManager;
 EasyButton g_resetButton(FLASH_PIN);
@@ -56,17 +58,21 @@ void reset()
 
 void saveSettings()
 {
-  auto server = String(g_urlParam.getValue());
+  g_polyServer = String(g_urlParam.getValue());
+  g_polyApiKey= String(g_apiKeyParam.getValue());
+  
   Serial.println("Writing to settings server: " + server);
   g_preferences.putString("server", server.c_str());
+  g_preferences.putString("apiKey", apiKey.c_str());
 }
 
 
 void loadSettings()
 {
-  auto server = g_preferences.getString("server", "");
-  Serial.println("Read from settings server: " + server);
-  strcpy(g_polyServer, server.c_str());
+  g_polyServer = g_preferences.getString("server", "");
+  g_polyApiKey = g_preferences.getString("apiKey", "");
+  Serial.println("Read from settings server: " + g_polyServer);
+  Serial.println("Read from settings apiKey: " + g_polyApiKey);
 }
 
 void processSettings()
@@ -90,6 +96,7 @@ void setup()
   Serial.begin(9600);
 
   g_wifiManager.addParameter(&g_urlParam);
+  g_wifiManager.addParameter(&g_apiKeyParam);
   g_wifiManager.setAPCallback(configModeCallback);
   g_wifiManager.setSaveConfigCallback(saveConfigCallback);
   g_wifiManager.autoConnect("PRESSURE-SENSOR");
@@ -99,13 +106,13 @@ void setup()
   g_resetButton.onPressed(reset);
   g_resetButton.begin();
 
-  if(strlen(g_polyServer) == 0)
+  if(g_polyServer.length() == 0)
   {
     Serial.println("No URL to PolyTunnel - resetting...");
     reset();
     return;
   }  
-  Serial.println("Server=" + String(g_polyServer));
+  Serial.println("Server=" + g_polyServer);
 
   Serial.println("Getting differential reading from AIN0 (P) and AIN1 (N)");
   Serial.println("ADC Range: +/- 6.144V (1 bit = 3mV/ADS1015, 0.1875mV/ADS1115)");
@@ -128,7 +135,6 @@ void setup()
 #define SAMPLE_COUNT 20
 int16_t g_readings[SAMPLE_COUNT];
 int g_readingIndex = 0;
-int g_skipCount = 0;
 time_t  g_readingStartTime;
 time_t  g_lastSample;
 
@@ -178,36 +184,17 @@ void loop()
   int16_t reading = g_ads.getLastConversionResults();
   Serial.println("reading=" + String(reading));
 
-  if(g_readingIndex > 0)
-  {
-    auto diff = abs(g_readings[g_readingIndex-1] - reading);
-
-    if(diff > 10)
-    {
-      if(g_skipCount++ > 20)
-      {
-        g_skipCount = g_readingIndex = 0;
-        Serial.println("Resetting sampling to start as diffs are not normalising.");
-      }
-      else
-      {
-        Serial.println("Skipping as diff max of 10 has been exceeded -  diff is " + String(diff));
-      }
-      return;
-    }
-  }
   Serial.println("Taking the reading=" + String(reading));
   g_readings[g_readingIndex] = reading;
-  g_skipCount = 0;
 
   if(g_readingIndex++ >= SAMPLE_COUNT)
   {
     g_readingIndex = 0;
 
-
     HTTPClient http;
-    bool http_begin = http.begin(g_polyServer);
-    String payload = "startTime=" + String(g_readingStartTime) + "&reading=" + String(avgReading());  //Combine the name and value
+    http.begin(g_polyServer);
+    http.addHeader("Authorization", "Bearer:" + g_polyApiKey);
+    String payload = "readingTimeUtc=" + String(g_readingStartTime) + "&reading=" + String(avgReading());  //Combine the name and value
     Serial.println("Sending: " + payload);
     
     http.addHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -215,5 +202,4 @@ void loop()
 
     Serial.println("POST Status code: " + String(httpResponseCode));
   }
-  
 }

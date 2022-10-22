@@ -2,6 +2,7 @@
 @model Allotment.Pages.SettingsModel
 @{
 }
+<h1>Settings</h1>
 
 <form method="post">
     <div class="form-horizontal">
@@ -21,3 +22,7 @@
         </button>
     </div>
 </form>
+
+
+<h2 class="mt-4">Api Key</h2>
+<textarea rows="3" cols="20" spellcheck="false" class="form-control" >@(await Model.GenerateTokenAsync())</textarea>

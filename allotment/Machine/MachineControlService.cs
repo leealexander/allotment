@@ -19,7 +19,7 @@ namespace Allotment.Machine
         Task StopAllAsync();
 
         Task WaterLevelMonitorOnAsync( int ?knownWaterHeightCm = null );
-        void StoreWaterLevelReading(DateTime dateTakenUtc, int reading);
+        Task StoreWaterLevelReadingAsync(int reading, DateTime dateTakenUtc);
 
         public CurrentStatus Status { get; }
     }
@@ -32,6 +32,7 @@ namespace Allotment.Machine
         private readonly ITempStore _tempStore;
         private readonly ISettingsStore _settingsStore;
         private readonly IWaterLevelStore _waterLevelStore;
+        private readonly IAuditLogger<MachineControlService> _auditLogger;
         private TimeSpan _waterOnDuration;
         private DateTime ?_waterOnTimeUtc = null;
         private DateTime? _waterLevelOnUtc = null;
@@ -39,13 +40,14 @@ namespace Allotment.Machine
         private CancellationTokenSource? _waterLevelSensorOffCancellation = null;
         private ConcurrentBag<WaterLevelReadingModel> _currentSessionWaterLevelReadings = new();
 
-        public MachineControlService(IMachine machine, IJobManager jobManager, ITempStore tempStore, ISettingsStore settingsStore, IWaterLevelStore waterLevelStore)
+        public MachineControlService(IMachine machine, IJobManager jobManager, ITempStore tempStore, ISettingsStore settingsStore, IWaterLevelStore waterLevelStore, IAuditLogger<MachineControlService> auditLogger)
         {
             _machine = machine;
             _jobManager = jobManager;
             _tempStore = tempStore;
             _settingsStore = settingsStore;
             _waterLevelStore = waterLevelStore;
+            _auditLogger = auditLogger;
         }
 
 
@@ -90,8 +92,9 @@ namespace Allotment.Machine
             }
         }
 
-        public void StoreWaterLevelReading(DateTime dateTakenUtc, int reading)
+        public async Task StoreWaterLevelReadingAsync(int reading, DateTime dateTakenUtc)
         {
+            await _auditLogger.LogAsync($"Received water level reading {reading} takenAt {dateTakenUtc.ToLocalTime().ToString()}");
             if (_machine.IsWaterLevelSensorOn)
             {
                 _currentSessionWaterLevelReadings.Add(new WaterLevelReadingModel
