@@ -17,11 +17,18 @@ namespace Allotment.Jobs
 
     public sealed class JobOptions
     {
-        public List<Type> StartupList { get; } = new List<Type>();
+        public List<Type> TypesStartupList { get; } = new();
+        public List<(JobHandler JobHandler, TimeSpan TimeSpan)> DelegateStartupList { get; } = new();
+
 
         public JobOptions StartWith<TImplementation>() where TImplementation : class, IJobService
         {
-            StartupList.Add(typeof(TImplementation));
+            TypesStartupList.Add(typeof(TImplementation));
+            return this;
+        }
+        public JobOptions StartWith(JobHandler handler, TimeSpan when)
+        {
+            DelegateStartupList.Add((handler,when));
             return this;
         }
     }

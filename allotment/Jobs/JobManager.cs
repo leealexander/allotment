@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-
-namespace Allotment.Jobs
+﻿namespace Allotment.Jobs
 {
     public interface IJobManager: IDisposable
     {
@@ -22,10 +19,15 @@ namespace Allotment.Jobs
         {
             _providor = providor;
             _logger = logger;
-            foreach (var serviceType in options.StartupList)
+            foreach (var serviceType in options.TypesStartupList)
             {
                 var job = new ScopedJobRun(serviceType, providor);
                 _jobsToAdd.Add(new QueuedJob(DateTime.UtcNow, job.RunAsync, _cancellationTokenSource.Token));
+            }
+
+            foreach (var ht in options.DelegateStartupList)
+            {
+                RunJobIn(ht.JobHandler, ht.TimeSpan);
             }
         }
 

@@ -31,7 +31,8 @@ namespace Allotment.Pages
         public async Task<string> GenerateTokenAsync()
         {
             var settings = await _settingsStore.GetAsync();
-            var securityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(settings.ApiJwtSecret));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.ApiJwtSecret));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -43,7 +44,7 @@ namespace Allotment.Pages
                 Expires = DateTime.UtcNow.AddYears(30),
                 Issuer = _allotmentConfig.Auth.SiteUrl.ToString(),
                 Audience = _allotmentConfig.Auth.SiteUrl.ToString(),
-                SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature)
+                SigningCredentials = credentials
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);

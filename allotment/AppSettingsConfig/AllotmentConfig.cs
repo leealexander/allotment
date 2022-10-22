@@ -15,6 +15,6 @@ namespace Allotment.AppSettingsConfig
         public Uri SiteUrl { get; set; } = null!;
 
         [Required]
-        public Uri AuthCallbackUrl { get; set; } = null!;
+        public string AuthCallbackUrl { get; set; } = null!;
     }
 }

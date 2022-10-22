@@ -2,7 +2,7 @@
 {
     public static class SettingsServices
     {
-        public static IServiceCollection AddAllotmentConfig(this IServiceCollection services, ConfigurationManager configurationManager)
+        public static AllotmentConfig AddAllotmentConfig(this IServiceCollection services, ConfigurationManager configurationManager)
         {
             var options = new AllotmentConfig();
             configurationManager.GetSection("AllotmentOptions").Bind(options);
@@ -10,7 +10,7 @@
             services.AddSingleton(Guard.Validate(options));
             services.AddSingleton(options);
 
-            return services;
+            return options;
         }
     }
 }
