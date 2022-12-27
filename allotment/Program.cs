@@ -14,16 +14,24 @@ var services = builder.Services;
 
 var allotmentConfig = services.AddAllotmentConfig(builder.Configuration);
 
-services.AddAllotmentAuthentication(builder.Configuration, allotmentConfig);
-
-services.AddAuthorization(options =>
+if(allotmentConfig.Auth.AuthenticationEnabled)
 {
-    // By default, all incoming requests will be authorized according to the default policy.
-    options.FallbackPolicy = options.DefaultPolicy;
-});
+    services.AddAllotmentAuthentication(builder.Configuration, allotmentConfig);
 
-services.AddRazorPages()
-    .AddMicrosoftIdentityUI();
+    services.AddAuthorization(options =>
+    {
+        // By default, all incoming requests will be authorized according to the default policy.
+        options.FallbackPolicy = options.DefaultPolicy;
+    });
+    services.AddRazorPages()
+        .AddMicrosoftIdentityUI();
+}
+else
+{
+    services.AddRazorPages();
+}
+
+
 
 
 services
@@ -60,10 +68,18 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthentication();
-app.UseAuthorization();
+if (allotmentConfig.Auth.AuthenticationEnabled)
+{
+    app.UseAuthentication();
+    app.UseAuthorization();
 
-app.MapRazorPages().RequireAuthorization();
+    app.MapRazorPages().RequireAuthorization();
+}
+else
+{
+    app.MapRazorPages();
+}
+
 app.MapControllers();
 
 app.AddAllotmentApi();

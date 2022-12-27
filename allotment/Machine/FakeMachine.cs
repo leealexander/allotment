@@ -50,7 +50,7 @@ namespace Allotment.Machine
         public bool IsWaterOn => _isWaterOn;
         public bool IsWaterLevelSensorOn => _isWaterLevelMonitorOn;
 
-
+        public string Title => "Debug fake machine";
 
         public async Task DoorsCloseAsync()
         {

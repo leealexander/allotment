@@ -23,6 +23,7 @@ namespace allotment.Pages
             HumidityByHour = new HtmlString(string.Join(',', readings.Select(x => $"'{x?.Humidity.Percent.ToString() ?? "null"}'")));
         }
 
+        public string MachineTitle => _machineControlService.MachineTitle;
 
         public string Status => _machineControlService.Status.Textual;
 

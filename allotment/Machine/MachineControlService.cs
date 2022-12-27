@@ -8,6 +8,7 @@ namespace Allotment.Machine
 {
     public interface IMachineControlService
     {
+        string MachineTitle { get; }
         bool AreDoorsClosing { get; }
         bool AreDoorsOpening { get; }
         bool IsWaterOn { get; }
@@ -50,6 +51,7 @@ namespace Allotment.Machine
             _auditLogger = auditLogger;
         }
 
+        public string MachineTitle => _machine.Title;
 
         public bool AreDoorsClosing  => _machine.AreDoorsClosing;
         public bool AreDoorsOpening => _machine.AreDoorsOpening;

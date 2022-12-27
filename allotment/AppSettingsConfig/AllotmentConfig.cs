@@ -16,5 +16,7 @@ namespace Allotment.AppSettingsConfig
 
         [Required]
         public string AuthCallbackUrl { get; set; } = null!;
+
+        public bool AuthenticationEnabled { get; set; }
     }
 }

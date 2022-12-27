@@ -19,6 +19,8 @@ namespace Allotment.Machine
         private CancellationTokenSource _doorCloseCancel = new();
         private LastDoorCommand? _lastDoorCommand;
 
+        public string Title => "Live";
+
         public bool IsPressurSensorOn => IsPinOn(_waterLevelSensorPowerPin);
 
         public bool IsWaterOn => IsPinOn(_waterPin);

@@ -5,6 +5,7 @@ namespace Allotment.Machine
     public enum LastDoorCommand { DoorsOpen, DoorsClosed }
     public interface IMachine
     {
+        public string Title { get; }
         bool AreDoorsClosing { get; }
         bool AreDoorsOpening { get; }
         LastDoorCommand? LastDoorCommand { get; }

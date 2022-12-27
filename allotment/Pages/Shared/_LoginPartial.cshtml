@@ -1,4 +1,6 @@
 ﻿@using System.Security.Principal
+@using Allotment.AppSettingsConfig;
+@inject AllotmentConfig Configuration
 
 <ul class="navbar-nav">
 @if (User.Identity?.IsAuthenticated == true)
@@ -11,7 +13,16 @@
 else
 {
         <li class="nav-item">
+        @if (Configuration.Auth.AuthenticationEnabled)
+        {
             <a class="nav-link text-dark" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn">Sign in</a>
+        }
+        else
+        {
+            <text>
+                Auth disabled (in app settings)
+            </text>            
+        }
         </li>
-}
+    }
 </ul>
