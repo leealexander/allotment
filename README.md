@@ -5,7 +5,7 @@ This is a repo for my pet project that automates a Polytunnel, it supports:
 3. Reading temperature and humidity 
 3. Checking water levels in the water butt (still in development)
 
-![Screenshot](ScreenShots/app-pic.jpg)
+![Screenshot](screen-shots/app-pic.jpg) 
 
 ## Setup
 The web application runs in the Polytunnel on a Raspberry Pi in a Dockerized container (Portainer) using IO ports to read sensors, control doors and activate a water pump. There is an old phone that provides the internet via a hotspot. A static IP address is provided by a reverse proxy on an Oracle cloud server giving access to the web app via the general internet.
