@@ -1,9 +1,8 @@
 ﻿using Allotment.DataStores;
 using Allotment.Machine.Models;
+using Allotment.Machine.Monitoring.Models;
 using Iot.Device.DHTxx;
 using System.Device.Gpio;
-using System.Runtime.CompilerServices;
-using UnitsNet.Units;
 
 namespace Allotment.Machine
 {
@@ -15,6 +14,7 @@ namespace Allotment.Machine
         private const int _waterLevelSensorPowerPin = 6;
         private readonly ISettingsStore _settingsStore;
         private readonly IAuditLogger<PiMachine> _auditLogger;
+        private readonly ISolarReader _solarReader;
         private CancellationTokenSource _doorOpenCancel = new();
         private CancellationTokenSource _doorCloseCancel = new();
         private LastDoorCommand? _lastDoorCommand;
@@ -29,10 +29,16 @@ namespace Allotment.Machine
         public bool AreDoorsClosing => IsPinOn(_doorPinClose);
         public LastDoorCommand? LastDoorCommand => _lastDoorCommand;
 
-        public PiMachine(ISettingsStore settingsStore, IAuditLogger<PiMachine> auditLogger)
+        public PiMachine(ISettingsStore settingsStore, IAuditLogger<PiMachine> auditLogger, ISolarReader solarReader)
         {
             _settingsStore = settingsStore;
             _auditLogger = auditLogger;
+            _solarReader = solarReader;
+        }
+
+        public async Task<SolarReadingModel?> TakeSolarReadingAsync()
+        {
+            return await _solarReader.TakeReadingAsync();
         }
 
         public async Task TurnAllOffAsync()

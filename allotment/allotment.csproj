@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-allotment-54C2565B-09AF-41FD-84E7-ED065E82D164</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <RootNamespace>Allotment</RootNamespace>
+	<RootNamespace>Allotment</RootNamespace>
     <AssemblyName>allotment</AssemblyName>
   </PropertyGroup>
 
@@ -18,7 +18,10 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.15.1" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.0" />
 	<PackageReference Include="Iot.Device.Bindings" Version="2.1.0" />
-	  
+	<PackageReference Include="NModbus" Version="3.0.78" />
+	<PackageReference Include="NModbus.Serial" Version="3.0.78" />
+	<PackageReference Include="System.IO.Ports" Version="7.0.0" />
+
   </ItemGroup>
 
 </Project>

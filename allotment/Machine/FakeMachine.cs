@@ -142,5 +142,12 @@ namespace Allotment.Machine
             await _auditLogger.LogAsync("Water butt level sensor off.");
             _isWaterLevelMonitorOn = false;
         }
+
+        public Task<SolarReadingModel?> TakeSolarReadingAsync()
+        {
+            var m = new SolarReadingModel();
+            m.DeviceStatus.Controller.Description = "Fake reading";
+            return Task.FromResult((SolarReadingModel?)m);
+        }
     }
 }

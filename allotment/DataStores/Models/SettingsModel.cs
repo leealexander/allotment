@@ -5,10 +5,17 @@
         public DoorsSettingsModel Doors { get; set; } = new();
         public IrrigationSettingsModel Irrigation { get; set; } = new();
         public string ApiJwtSecret { get; set; } = Guid.NewGuid().ToString();
+        public SolarChargerSettingsModel SolarChargerSettingsModel { get; set; } = new();
     }
     public record DoorsSettingsModel
     {
         public TimeSpan ActionPowerOnDuration { get; set; } = TimeSpan.FromSeconds(50);
+    }
+
+    public record SolarChargerSettingsModel
+    {
+        public string SerialAddress { get; set; } = "/dev/ttyACM0";
+        public int BaudRate { get; set; } = 115200;
     }
 
     public record IrrigationSettingsModel

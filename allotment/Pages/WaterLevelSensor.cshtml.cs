@@ -1,14 +1,10 @@
 using Allotment.DataStores;
-using Allotment.DataStores.Models;
 using Allotment.Machine;
 using Allotment.Machine.Monitoring.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Identity.Client;
 using System.ComponentModel.DataAnnotations;
-using System.Net;
 
 namespace Allotment.Pages
 {

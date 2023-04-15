@@ -1,4 +1,5 @@
 ﻿using Allotment.Machine.Models;
+using Allotment.Machine.Monitoring.Models;
 
 namespace Allotment.Machine
 {
@@ -22,6 +23,7 @@ namespace Allotment.Machine
 
         public Task TurnAllOffAsync();
 
+        public Task<SolarReadingModel?> TakeSolarReadingAsync();
 
         Task<bool> TryGetTempDetailsAsync(Action<TempDetails> tempDetailsFound);
     }

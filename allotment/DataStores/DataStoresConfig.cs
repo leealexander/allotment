@@ -8,6 +8,7 @@
             services.AddSingleton<ISettingsStore, SettingsStore>();
             services.AddSingleton<ILogsStore, LogsStore>();
             services.AddSingleton<IWaterLevelStore, WaterLevelStore>();
+            services.AddSingleton<ISolarStore, SolarStore>();
             services.AddSingleton(typeof(IStateStore<>), typeof(StateStore<>));
             
             return services; 

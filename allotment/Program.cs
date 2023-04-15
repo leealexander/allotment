@@ -45,6 +45,7 @@ services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 services.AddJobs()
     .StartWith<MachineStartup>()
     .StartWith<TempMonitor>()
+    .StartWith<SolarMonitor>()
     .StartWith<WaterLevelMonitor>();
 
 
