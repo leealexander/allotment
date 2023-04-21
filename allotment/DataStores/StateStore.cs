@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using Allotment.Utils;
+using System.Text.Json;
 
 namespace Allotment.DataStores
 {
@@ -12,7 +13,7 @@ namespace Allotment.DataStores
 
     public class StateStore<TModel> : DataStore, IStateStore<TModel> where TModel : class, new()
     {
-        public StateStore() : base(typeof(TModel).Name)
+        public StateStore(IFileSystem fileSystem) : base(typeof(TModel).Name, fileSystem)
         {
 
         }

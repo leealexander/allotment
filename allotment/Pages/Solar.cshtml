@@ -6,41 +6,164 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<h2>Device Status</h2>
-<ol class="list-group list-group-numbered">
-    <li class="list-group-item d-flex justify-content-between align-items-start">
-        <div class="ms-2 me-auto">
-            <div class="fw-bold">Charge</div>
-            @Model.LastReading.DeviceStatus.Charge.Description
+<canvas class="my-4 w-100 chartjs-render-monitor" id="myChart" style="display: block; width: 2085px; height: 880px;" width="2085" height="880"></canvas>
+
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h3>Device Status</h3>
+            <ol class="list-group list-group-numbered">
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">Charge</div>
+                        @Model.LastReading.DeviceStatus.Charge.Description
+                    </div>
+                    <span class="badge bg-primary rounded-pill">@Model.LastReading.DeviceStatus.Charge.Health</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">Battery</div>
+                        @Model.LastReading.DeviceStatus.Battery.Description
+                    </div>
+                    <span class="badge bg-primary rounded-pill">@Model.LastReading.DeviceStatus.Battery.Health</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">Load</div>
+                        @Model.LastReading.DeviceStatus.Load.Description
+                    </div>
+                    <span class="badge bg-primary rounded-pill">@Model.LastReading.DeviceStatus.Load.Health</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">Controller</div>
+                        @Model.LastReading.DeviceStatus.Controller.Description
+                    </div>
+                    <span class="badge bg-primary rounded-pill">@Model.LastReading.DeviceStatus.Controller.Health</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">Solar panel</div>
+                        @Model.LastReading.DeviceStatus.SolarPanel.Description
+                    </div>
+                    <span class="badge bg-primary rounded-pill">@Model.LastReading.DeviceStatus.SolarPanel.Health</span>
+                </li>
+            </ol>
         </div>
-        <span class="badge bg-primary rounded-pill">@Model.LastReading.DeviceStatus.Charge.Health</span>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-start">
-        <div class="ms-2 me-auto">
-            <div class="fw-bold">Battery</div>
-            @Model.LastReading.DeviceStatus.Battery.Description
+        <div class="col">
+            <h3>Battery</h3>
+            <ol class="list-group list-group-numbered">
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">Voltage</div>
+                        @(Model.LastReading.Battery.Voltage)v
+                    </div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">Current</div>
+                        @(Model.LastReading.Battery.Current)amps
+                    </div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">Temperature</div>
+                        @(Model.LastReading.Battery.Temperature)c
+                    </div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">SOC</div>
+                        @(Model.LastReading.Battery.StateOfCharge)
+                    </div>
+                </li>
+            </ol>
         </div>
-        <span class="badge bg-primary rounded-pill">@Model.LastReading.DeviceStatus.Battery.Health</span>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-start">
-        <div class="ms-2 me-auto">
-            <div class="fw-bold">Load</div>
-            @Model.LastReading.DeviceStatus.Load.Description
+    </div>
+    <div class="row .g-3">
+        <div class="col">
+            <h3>Load</h3>
+            <ol class="list-group list-group-numbered">
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">Voltage</div>
+                        @(Model.LastReading.Load.Voltage)v
+                    </div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">Current</div>
+                        @(Model.LastReading.Load.Current)amps
+                    </div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">Watts</div>
+                        @(Model.LastReading.Load.Watts)watts
+                    </div>
+                </li>
+            </ol>
         </div>
-        <span class="badge bg-primary rounded-pill">@Model.LastReading.DeviceStatus.Load.Health</span>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-start">
-        <div class="ms-2 me-auto">
-            <div class="fw-bold">Controller</div>
-            @Model.LastReading.DeviceStatus.Controller.Description
+        <div class="col">
+            <h3 >Solar Panel</h3>
+            <ol class="list-group list-group-numbered">
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">Voltage</div>
+                        @(Model.LastReading.SolarPanel.Voltage)v
+                    </div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">Current</div>
+                        @(Model.LastReading.SolarPanel.Current)amps
+                    </div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">Watts</div>
+                        @(Model.LastReading.SolarPanel.Watts)watts
+                    </div>
+                </li>
+            </ol>
         </div>
-        <span class="badge bg-primary rounded-pill">@Model.LastReading.DeviceStatus.Controller.Health</span>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-start">
-        <div class="ms-2 me-auto">
-            <div class="fw-bold">Solar panel</div>
-            @Model.LastReading.DeviceStatus.SolarPanel.Description
-        </div>
-        <span class="badge bg-primary rounded-pill">@Model.LastReading.DeviceStatus.SolarPanel.Health</span>
-    </li>
-</ol>
+    </div>
+</div>
+
+<h6 class="p-3">
+Taken on: @(Model.LastReading.DateTakenUtc.ToString()) utc
+</h6>
+
+
+
+
+@section scripts
+    {
+    <script>
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [@Model.Labels],
+                datasets: [{
+                    label: 'Solar Wattage',
+                    borderColor: "#bae755",
+                    data: [@(await Model.GetSolarWattageByHourAsync())],
+                }, {
+                    label: 'State of Charge',
+                    borderColor: "##9255e7",
+                data: [@(await Model.GetBatterySocByHourAsync())],
+                }
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+}

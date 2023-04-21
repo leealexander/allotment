@@ -6,6 +6,7 @@ using Allotment.Jobs;
 using Allotment.Machine;
 using Allotment.Machine.Monitoring;
 using Allotment.Services;
+using Allotment.Utils;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Identity.Web.UI;
 
@@ -13,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 
 var allotmentConfig = services.AddAllotmentConfig(builder.Configuration);
+services.AddUtils();
 
 if(allotmentConfig.Auth.AuthenticationEnabled)
 {

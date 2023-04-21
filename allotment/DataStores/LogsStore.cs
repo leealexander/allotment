@@ -1,8 +1,5 @@
 ﻿using Allotment.DataStores.Models;
-using Allotment.Machine.Models;
-using System.Collections.Generic;
-using System.Text.Json;
-using UnitsNet.Units;
+using Allotment.Utils;
 
 namespace Allotment.DataStores
 {
@@ -14,7 +11,7 @@ namespace Allotment.DataStores
 
     public class LogsStore : DataStore, ILogsStore
     {
-        public LogsStore() : base("logs/$date.csv")
+        public LogsStore(IFileSystem fileSystem) : base("logs/$date.csv", fileSystem)
         {
         }
 

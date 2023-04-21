@@ -1,17 +1,18 @@
-﻿namespace Allotment.DataStores
+﻿using Allotment.Utils;
+
+namespace Allotment.DataStores
 {
     public abstract class DataStore
     {
         private readonly string _fileName;
+        private readonly IFileSystem _fileSystem;
 
-        public DataStore(string fileName)
+        public DataStore(string fileName, IFileSystem fileSystem )
         {
             _fileName = fileName;
+            _fileSystem = fileSystem;
             var fi = new FileInfo(Path.Combine(BaseDir, fileName));
-            if(fi.Directory != null && !fi.Directory.Exists)
-            {
-                fi.Directory.Create();
-            }
+            fileSystem.CreateFileDirectory( fi );
         }
 
         public string BaseDir => $"/data/";

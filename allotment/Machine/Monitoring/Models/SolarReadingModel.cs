@@ -20,7 +20,7 @@
     public record Battery
     {
         public double Temperature { get; set; }
-        public ushort StateOfCharge { get; set; }
+        public int StateOfCharge { get; set; }
         public double Voltage { get; set; }
         public double Current { get; set; }
     }

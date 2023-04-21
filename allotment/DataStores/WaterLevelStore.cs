@@ -1,6 +1,7 @@
 ﻿using Allotment.DataStores.Models;
 using Allotment.Machine.Models;
 using Allotment.Machine.Monitoring.Models;
+using Allotment.Utils;
 using UnitsNet.Units;
 
 namespace Allotment.DataStores
@@ -17,7 +18,8 @@ namespace Allotment.DataStores
         private readonly ISettingsStore _settingsStore;
         private readonly IStateStore<WaterSensorStateModel> _stateModel;
 
-        public WaterLevelStore(ISettingsStore settingsStore, IStateStore<WaterSensorStateModel> stateModel) : base("water-level/readings.csv")
+        public WaterLevelStore(ISettingsStore settingsStore, IStateStore<WaterSensorStateModel> stateModel, IFileSystem fileSystem) 
+            : base("water-level/readings.csv", fileSystem)
         {
             _settingsStore = settingsStore;
             _stateModel = stateModel;

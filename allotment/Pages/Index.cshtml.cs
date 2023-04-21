@@ -1,5 +1,5 @@
-﻿using Allotment.Machine;
-using Allotment.Machine.Monitoring;
+﻿using Allotment.DataStores;
+using Allotment.Machine;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -9,16 +9,16 @@ namespace allotment.Pages
     public class IndexModel : PageModel
     {
         private readonly ILogger<IndexModel> _logger;
-        private readonly ITempMonitor _tempMonitor;
+        private readonly ITempStore _tempStore;
         private readonly IMachineControlService _machineControlService;
 
 
-        public IndexModel(ILogger<IndexModel> logger, ITempMonitor tempMonitor, IMachineControlService machineControlService)
+        public IndexModel(ILogger<IndexModel> logger, ITempStore tempStore, IMachineControlService machineControlService)
         {
             _logger = logger;
-            _tempMonitor = tempMonitor; 
+            _tempStore = tempStore; 
             _machineControlService = machineControlService;
-            var readings = _tempMonitor.ReadingsByHour.ToArray();
+            var readings = _tempStore.ReadingsByHour.ToArray();
             TempByHour = new HtmlString(string.Join(',', readings.Select(x => $"'{x?.Temperature.DegreesCelsius.ToString() ?? "null"}'")));
             HumidityByHour = new HtmlString(string.Join(',', readings.Select(x => $"'{x?.Humidity.Percent.ToString() ?? "null"}'")));
         }
