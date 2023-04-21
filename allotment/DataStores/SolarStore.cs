@@ -90,6 +90,7 @@ namespace Allotment.DataStores
             sb.Append($",{model.Battery.StateOfCharge}");
             sb.Append($",{model.Battery.Current}");
             sb.Append($",{model.Battery.Voltage}");
+            sb.AppendLine(); 
 
             return sb.ToString();
         }
