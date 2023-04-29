@@ -7,7 +7,6 @@ namespace Allotment.Machine.Monitoring
     {
         private readonly IMachineControlService _machineService;
         private readonly ISettingsStore _settingsStore;
-        private static bool _firstTime = true;
 
         public WaterLevelMonitor(IMachineControlService machineService, ISettingsStore settingsStore)
         {
@@ -18,11 +17,18 @@ namespace Allotment.Machine.Monitoring
 
         public async Task RunAsync(IRunContext ctx)
         {
-            if (!_firstTime && !_machineService.IsWaterLevelSensorOn)
+            //  We don't want to measure when water is being drawn as this could effect the reading
+            if(_machineService.IsWaterOn)
+            {
+                ctx.RunAgainIn(TimeSpan.FromSeconds(30));
+                return;
+            }
+
+            if (!_machineService.IsWaterLevelSensorOn)
             {
                 await _machineService.WaterLevelMonitorOnAsync();
             }
-            _firstTime = false;
+
             ctx.RunAgainIn((await _settingsStore.GetAsync()).Irrigation.WaterLevelSensor.PeriodicCheckDuration);
         }
     }

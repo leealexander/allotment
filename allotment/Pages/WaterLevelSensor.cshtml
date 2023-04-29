@@ -10,9 +10,10 @@
     <canvas class="my-4 w-100 chartjs-render-monitor" id="myChart" style="display: block; width: 2085px; height: 880px;" width="2085" height="880"></canvas>
 </div>
 
-@if (Model.IsWaterSensorOn)
+@if (!Model.IsWaterSensorOn)
 {
     <form method="post">
+        @Html.ValidationSummary()
         <div class="form-group">
             <label asp-for="KnownDepthCm">Enter Known Depth cm:</label>
             <input asp-for="KnownDepthCm" />

@@ -109,30 +109,33 @@ namespace Allotment.Machine
 
         public async Task WaterLevelMonitorOnAsync(int? knownWaterHeightCm = null)
         {
-            if(!_machine.IsWaterLevelSensorOn)
+            if(_machine.IsWaterLevelSensorOn)
             {
-                if (_waterLevelSensorOffCancellation is not null)
-                {
-                    _waterLevelSensorOffCancellation.Cancel();
-                    _waterLevelSensorOffCancellation.Dispose();
-                }
-                var settings = await _settingsStore.GetAsync();
-                _waterLevelOnUtc = DateTime.UtcNow;
-                await _machine.WaterLevelSensorPowerOnAsync();
-
-                _waterLevelSensorOffCancellation = new CancellationTokenSource();
-                _currentSessionWaterLevelReadings.Clear();
-                _jobManager.RunJobIn(async ctx =>
-                {
-                    await _machine.WaterLevelSensorPowerOffAsync();
-                    if (knownWaterHeightCm.HasValue)
-                    {
-                        await _waterLevelStore.ApplyKnownWaterLevelAsync(knownWaterHeightCm.Value);
-                    }
-
-                    _currentSessionWaterLevelReadings.Clear();
-                }, settings.Irrigation.WaterLevelSensor.PoweredOnDuration, _waterLevelSensorOffCancellation.Token);
+                await _machine.WaterLevelSensorPowerOffAsync();
+                await Task.Delay(500);
             }
+
+            if (_waterLevelSensorOffCancellation is not null)
+            {
+                _waterLevelSensorOffCancellation.Cancel();
+                _waterLevelSensorOffCancellation.Dispose();
+            }
+            var settings = await _settingsStore.GetAsync();
+            _waterLevelOnUtc = DateTime.UtcNow;
+            await _machine.WaterLevelSensorPowerOnAsync();
+
+            _waterLevelSensorOffCancellation = new CancellationTokenSource();
+            _currentSessionWaterLevelReadings.Clear();
+            _jobManager.RunJobIn(async ctx =>
+            {
+                await _machine.WaterLevelSensorPowerOffAsync();
+                if (knownWaterHeightCm.HasValue)
+                {
+                    await _waterLevelStore.ApplyKnownWaterLevelAsync(knownWaterHeightCm.Value);
+                }
+
+                _currentSessionWaterLevelReadings.Clear();
+            }, settings.Irrigation.WaterLevelSensor.PoweredOnDuration, _waterLevelSensorOffCancellation.Token);
         }
 
 
