@@ -24,9 +24,9 @@ namespace Allotment.Machine
         }
         public async Task<SolarReadingModel?> TakeReadingAsync()
         {
+            var settings = await _settings.GetAsync();
             try
             {
-                var settings = await _settings.GetAsync();
                 using var serialPort = new SerialPort(settings.SolarChargerSettingsModel.SerialAddress, settings.SolarChargerSettingsModel.BaudRate);
                 serialPort.DataBits = 8;
                 serialPort.StopBits = StopBits.One;
@@ -45,7 +45,7 @@ namespace Allotment.Machine
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Failed to read solar charger, reason: {ex.Message}");
+                _logger.LogError($"Failed to read solar charger on port {settings.SolarChargerSettingsModel.SerialAddress}, reason: {ex.Message}");
             }
 
             return null;

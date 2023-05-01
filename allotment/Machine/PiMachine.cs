@@ -8,8 +8,8 @@ namespace Allotment.Machine
 {
     public class PiMachine : IMachine
     {
-        private const int _doorPinOpen = 26;
-        private const int _doorPinClose = 19;
+        private const int _doorPinOpen = 19;
+        private const int _doorPinClose = 26;
         private const int _waterPin = 13;
         private const int _waterLevelSensorPowerPin = 6;
         private readonly ISettingsStore _settingsStore;
