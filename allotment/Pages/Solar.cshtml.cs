@@ -2,6 +2,7 @@ using Allotment.DataStores;
 using Allotment.Machine.Monitoring.Models;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using static Allotment.DataStores.SolarStore;
 
 namespace Allotment.Pages
 {
@@ -23,7 +24,9 @@ namespace Allotment.Pages
         public async Task<HtmlString> GetSolarWattageByHourAsync()
         {
             var stats = await GetStatsAsync();
-            return new HtmlString(string.Join(',', stats.Select(x => $"'{(x?.SolarPanel.Watts*10D).ToString() ?? "null"}'")));
+            string SolarToString(SolarHourReading x) => x == null ? "'null'" : $"'{x.SolarPanel.Watts * 10D}'";
+            var result = new HtmlString(string.Join(',', stats.Select(SolarToString)));
+            return result;
         }
 
         public async Task<HtmlString> GetBatterySocByHourAsync()
@@ -37,10 +40,7 @@ namespace Allotment.Pages
 
         private async Task<SolarStore.SolarHourReading[]> GetStatsAsync()
         {
-            if(_stats == null)
-            {
-                _stats = await _solarStore.GetReadingsByHourAsync();
-            }
+            _stats ??= await _solarStore.GetReadingsByHourAsync();
 
             return _stats;
         }

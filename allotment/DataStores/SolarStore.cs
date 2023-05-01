@@ -23,7 +23,11 @@ namespace Allotment.DataStores
 
         public async Task StoreReadingAsync(SolarReadingModel details)
         {
-            await _fileSystem.AppendAllTextAsync(GetFilename(), ToCsv(details));
+            if(details != null)
+            {
+                _lastRead = details;
+                await _fileSystem.AppendAllTextAsync(GetFilename(), ToCsv(details));
+            }
         }
 
         public record SolarHourReading
