@@ -2,7 +2,7 @@
 {
     public record SolarReadingModel
     {
-        public DateTime DateTakenUtc { get; set; }
+        public DateTime DateTakenUtc { get; set; } = DateTime.UtcNow;
         public DeviceStatus DeviceStatus { get; set; } = new();
         public ElectricalVariables SolarPanel { get; set; } = new();
         public ElectricalVariables Load { get; set; } = new();
