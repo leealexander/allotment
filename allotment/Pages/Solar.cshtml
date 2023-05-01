@@ -147,7 +147,7 @@ Taken on: @(Model.LastReading.DateTakenUtc.ToString()) utc
             data: {
                 labels: [@Model.Labels],
                 datasets: [{
-                    label: 'Solar Wattage',
+                    label: 'Solar Wattage (*10 scale)',
                     borderColor: "#bae755",
                     data: [@(await Model.GetSolarWattageByHourAsync())],
                 }, {
