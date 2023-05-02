@@ -28,7 +28,13 @@ namespace Allotment.Pages
             var result = new HtmlString(string.Join(',', stats.Select(SolarToString)));
             return result;
         }
-
+        public async Task<HtmlString> GetSolarVoltageByHourAsync()
+        {
+            var stats = await GetStatsAsync();
+            string SolarToString(SolarHourReading x) => x == null ? "'null'" : $"'{x.SolarPanel.Voltage * 10D}'";
+            var result = new HtmlString(string.Join(',', stats.Select(SolarToString)));
+            return result;
+        }
         public async Task<HtmlString> GetBatterySocByHourAsync()
         {
             var stats = await GetStatsAsync();

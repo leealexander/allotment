@@ -147,15 +147,18 @@ Taken on: @(Model.LastReading.DateTakenUtc.ToString()) utc
             data: {
                 labels: [@Model.Labels],
                 datasets: [{
-                    label: 'Solar Wattage (*10 scale)',
+                    label: 'Solar W (*10 scale)',
                     borderColor: "#bae755",
                     data: [@(await Model.GetSolarWattageByHourAsync())],
                 }, {
+                    label: 'Solar V (*10 scale)',
+                    borderColor: "#9255e7",
+                data: [@(await Model.GetSolarVoltageByHourAsync())],
+                }, {
                     label: 'State of Charge',
-                    borderColor: "##9255e7",
-                data: [@(await Model.GetBatterySocByHourAsync())],
-                }
-                ]
+                    borderColor: "#493f27",
+                    data: [@(await Model.GetBatterySocByHourAsync())],
+                }]
             },
             options: {
                 scales: {

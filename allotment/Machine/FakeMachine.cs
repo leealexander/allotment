@@ -148,8 +148,9 @@ namespace Allotment.Machine
             var m = new SolarReadingModel();
             m.DeviceStatus.Controller.Description = "Fake reading";
             m.DateTakenUtc = DateTime.UtcNow;
-            m.Battery.StateOfCharge = DateTime.UtcNow.Hour * 2;
-            m.SolarPanel.Watts = DateTime.UtcNow.Hour * 10;
+            m.Battery.StateOfCharge = 100;
+            m.SolarPanel.Watts = 20;
+            m.SolarPanel.Voltage = 24;
             return Task.FromResult((SolarReadingModel?)m);
         }
     }
