@@ -61,9 +61,9 @@ void saveSettings()
   g_polyServer = String(g_urlParam.getValue());
   g_polyApiKey= String(g_apiKeyParam.getValue());
   
-  Serial.println("Writing to settings server: " + server);
-  g_preferences.putString("server", server.c_str());
-  g_preferences.putString("apiKey", apiKey.c_str());
+  Serial.println("Writing to settings server: " + g_polyServer);
+  g_preferences.putString("server", g_polyServer.c_str());
+  g_preferences.putString("apiKey", g_polyApiKey.c_str());
 }
 
 
@@ -192,9 +192,9 @@ void loop()
     g_readingIndex = 0;
 
     HTTPClient http;
-    http.begin(g_polyServer);
+    http.begin(g_polyServer + "/api/waterlevel/readings");
     http.addHeader("Authorization", "Bearer:" + g_polyApiKey);
-    String payload = "readingTimeUtc=" + String(g_readingStartTime) + "&reading=" + String(avgReading());  //Combine the name and value
+    String payload = "{readingTimeUtc:" +  String(g_readingStartTime) + ",reading:"+  String(g_readingStartTime) + "}";  //Combine the name and value
     Serial.println("Sending: " + payload);
     
     http.addHeader("Content-Type", "application/x-www-form-urlencoded");

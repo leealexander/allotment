@@ -1,6 +1,7 @@
 ﻿using Allotment.ApiModels;
 using Allotment.DataStores;
 using Allotment.Machine;
+using System.Reflection;
 
 namespace Allotment
 {
@@ -30,12 +31,19 @@ namespace Allotment
 
                 var settings = await settingsStore.GetAsync();
 
-                await service.StoreWaterLevelReadingAsync(model.Reading, model.ReadingTimeUtc);
+                var dt = ToDateTime(model.ReadingTimeUtc);
+                await service.StoreWaterLevelReadingAsync(model.Reading, dt);
 
                 return Results.Ok();
             });
 
             return route;
         }
+
+        private static DateTime ToDateTime(int timet)
+        {
+            return new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(timet);
+        }
+
     }
 }

@@ -8,6 +8,6 @@ namespace Allotment.ApiModels
         public int Reading { get; set; }
 
         [Required]
-        public DateTime ReadingTimeUtc { get; set; }
+        public int ReadingTimeUtc { get; set; }
     }
 }
