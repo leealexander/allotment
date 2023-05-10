@@ -49,6 +49,10 @@ namespace Allotment.Services
         {
             var state = await GetStateAsync();
             var knownReadings = state.KnownReadings;
+            if(knownReadings.Count == 0)
+            {
+                return null;
+            }
             var reading = state.LastReading;
             if(reading == null)
             {
