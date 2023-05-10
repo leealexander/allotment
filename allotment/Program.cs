@@ -1,5 +1,4 @@
 using Allotment;
-using Allotment.ApiModels;
 using Allotment.AppSettingsConfig;
 using Allotment.DataStores;
 using Allotment.Jobs;
@@ -11,6 +10,8 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Identity.Web.UI;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.AddConsole();
+
 var services = builder.Services;
 
 var allotmentConfig = services.AddAllotmentConfig(builder.Configuration);
@@ -41,6 +42,7 @@ services
     .AddDataStores()
     .AddAllotmentServices()
     .AddTransient(typeof(IAuditLogger<>), typeof(AuditLogger<>));
+
 
 services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 

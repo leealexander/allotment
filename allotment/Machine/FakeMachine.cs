@@ -54,7 +54,7 @@ namespace Allotment.Machine
 
         public async Task DoorsCloseAsync()
         {
-            await _auditLogger.LogAsync("Doors close.");
+            await _auditLogger.AuditLogAsync("Doors close.");
             _isClosing = true;
             _isOpening = false;
             LastDoorCommand = Machine.LastDoorCommand.DoorsClosed;
@@ -67,7 +67,7 @@ namespace Allotment.Machine
 
         public async Task DoorsOpenAsync()
         {
-            await _auditLogger.LogAsync("Doors open.");
+            await _auditLogger.AuditLogAsync("Doors open.");
             _isOpening = true;
             _isClosing = false;
             LastDoorCommand = Machine.LastDoorCommand.DoorsOpen;
@@ -93,19 +93,19 @@ namespace Allotment.Machine
 
         public async Task TurnAllOffAsync()
         {
-            await _auditLogger.LogAsync("Turn all off.");
+            await _auditLogger.AuditLogAsync("Turn all off.");
             _isWaterLevelMonitorOn = _isOpening = _isClosing = _isWaterOn = false;
         }
 
         public async Task WaterOffAsync()
         {
-            await _auditLogger.LogAsync("Water off.");
+            await _auditLogger.AuditLogAsync("Water off.");
             _isWaterOn = false;
         }
 
         public async Task WaterOnAsync()
         {
-            await _auditLogger.LogAsync("Water on.");
+            await _auditLogger.AuditLogAsync("Water on.");
             _isWaterOn = true;
         }
 
@@ -132,14 +132,14 @@ namespace Allotment.Machine
 
         public async Task WaterLevelSensorPowerOnAsync()
         {
-            await _auditLogger.LogAsync("Water butt level sensor on.");
+            await _auditLogger.AuditLogAsync("Water butt level sensor on.");
             _isWaterLevelMonitorOn = true;
             await _waterLevelStore.StoreReadingAsync( new WaterLevelReadingModel { DateTakenUtc = DateTime.UtcNow, Reading = _samplePressureReadings[_samplePressureReadingsIndex++] });
         }
 
         public async Task WaterLevelSensorPowerOffAsync()
         {
-            await _auditLogger.LogAsync("Water butt level sensor off.");
+            await _auditLogger.AuditLogAsync("Water butt level sensor off.");
             _isWaterLevelMonitorOn = false;
         }
 

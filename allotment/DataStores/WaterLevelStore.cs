@@ -1,6 +1,7 @@
 ﻿using Allotment.DataStores.Models;
 using Allotment.Machine.Models;
 using Allotment.Machine.Monitoring.Models;
+using Allotment.Services;
 using Allotment.Utils;
 using UnitsNet.Units;
 
@@ -17,12 +18,14 @@ namespace Allotment.DataStores
     {
         private readonly ISettingsStore _settingsStore;
         private readonly IStateStore<WaterSensorStateModel> _stateModel;
+        private readonly IAuditLogger<WaterLevelService> _auditLogger;
 
-        public WaterLevelStore(ISettingsStore settingsStore, IStateStore<WaterSensorStateModel> stateModel, IFileSystem fileSystem) 
+        public WaterLevelStore(ISettingsStore settingsStore, IStateStore<WaterSensorStateModel> stateModel, IFileSystem fileSystem, IAuditLogger<WaterLevelService> auditLogger) 
             : base("water-level/readings.csv", fileSystem)
         {
             _settingsStore = settingsStore;
             _stateModel = stateModel;
+            _auditLogger = auditLogger;
         }
 
         public async Task<ICollection<WaterLevelReadingModel>> GetReadingsAsync()
@@ -61,6 +64,7 @@ namespace Allotment.DataStores
 
         public async Task StoreReadingAsync(WaterLevelReadingModel details)
         {
+            _auditLogger.LogInformation($"Storing waterlevel processed reading {details.Reading} at '{GetFilename()}'");
             var knownDepth = details.KnownDepthCm.HasValue ? details.KnownDepthCm.Value.ToString() : "";
             await File.AppendAllLinesAsync(GetFilename(), new[] { $"{details.DateTakenUtc:o},{details.Reading},{knownDepth}"});
 

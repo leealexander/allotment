@@ -4,19 +4,29 @@ namespace Allotment
 {
     public interface IAuditLogger<TArea>
     {
-        Task LogAsync(string message);
+        Task AuditLogAsync(string message);
+        void LogInformation(string message);
     }
 
     public class AuditLogger<TArea> : IAuditLogger<TArea>
     {
         private readonly ILogsStore _logsStore;
+        private readonly ILogger<TArea> _logger;
 
-        public AuditLogger(ILogsStore logsStore)
+        public AuditLogger(ILogsStore logsStore, ILogger<TArea> logger)
         {
             _logsStore = logsStore;
+            _logger = logger;
         }
-        public async Task LogAsync(string message)
+
+        public void LogInformation(string message)
         {
+            _logger.LogInformation(message);
+        }
+
+        public async Task AuditLogAsync(string message)
+        {
+            _logger.LogInformation(message);
             await _logsStore.StoreAsync(new DataStores.Models.LogEntryModel
             {
                 EventDateUtc = DateTime.UtcNow,

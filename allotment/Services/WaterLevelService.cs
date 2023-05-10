@@ -113,12 +113,13 @@ namespace Allotment.Services
 
         public async Task ProcessReadingsBatchAsync(IEnumerable<WaterLevelReadingModel> batch)
         {
+            _auditLogger.LogInformation($"Processing {batch.Count()} readings ");
             var settings = await _settingsStore.GetAsync();
             var batchReadings = batch.OrderBy(x => x.DateTakenUtc).ToArray();
             var minReadings = settings.Irrigation.WaterLevelSensor.MinReadingsPerSensonOnSession;
             if (batchReadings.Length < minReadings)
             {
-                await _auditLogger.LogAsync($"Couldn't store a water level reading as Not enough readings were taken min {minReadings}: '{string.Join(", ", batchReadings.Select(x=>x.Reading))}");
+                await _auditLogger.AuditLogAsync($"Couldn't store a water level reading as Not enough readings were taken min {minReadings}: '{string.Join(", ", batchReadings.Select(x=>x.Reading))}");
                 return;
             }
 
@@ -134,7 +135,7 @@ namespace Allotment.Services
             }
             else
             {
-                await _auditLogger.LogAsync($"Couldn't store a water level reading as there were no qualifying runs of ~contiguous readings");
+                await _auditLogger.AuditLogAsync($"Couldn't store a water level reading as there were no qualifying runs of ~contiguous readings");
             }
         }
 

@@ -43,7 +43,7 @@ namespace Allotment.Machine
 
         public async Task TurnAllOffAsync()
         {
-            await _auditLogger.LogAsync("Turn all off.");
+            await _auditLogger.AuditLogAsync("Turn all off.");
             using GpioController controller = new();
             controller.OpenPin(_waterPin, PinMode.Output);
             controller.OpenPin(_doorPinClose, PinMode.Output);
@@ -66,7 +66,7 @@ namespace Allotment.Machine
 
         public async Task WaterLevelSensorPowerOnAsync()
         {
-            await _auditLogger.LogAsync("Water butt level sensor on.");
+            await _auditLogger.AuditLogAsync("Water butt level sensor on.");
             using GpioController controller = new();
             controller.OpenPin(_waterLevelSensorPowerPin, PinMode.Output);
             controller.Write(_waterLevelSensorPowerPin, PinValue.Low);
@@ -75,7 +75,7 @@ namespace Allotment.Machine
 
         public async Task WaterLevelSensorPowerOffAsync()
         {
-            await _auditLogger.LogAsync("Water butt level sensor off.");
+            await _auditLogger.AuditLogAsync("Water butt level sensor off.");
             using GpioController controller = new();
             controller.OpenPin(_waterLevelSensorPowerPin, PinMode.Output);
             controller.Write(_waterLevelSensorPowerPin, PinValue.High);
@@ -86,7 +86,7 @@ namespace Allotment.Machine
 
         public async Task WaterOnAsync()
         {
-            await _auditLogger.LogAsync("Water on.");
+            await _auditLogger.AuditLogAsync("Water on.");
             using GpioController controller = new();
             controller.OpenPin(_waterPin, PinMode.Output);
             controller.Write(_waterPin, PinValue.Low);
@@ -95,7 +95,7 @@ namespace Allotment.Machine
 
         public async Task WaterOffAsync()
         {
-            await _auditLogger.LogAsync("Water off.");
+            await _auditLogger.AuditLogAsync("Water off.");
             using GpioController controller = new();
             controller.OpenPin(_waterPin, PinMode.Output);
             controller.Write(_waterPin, PinValue.High);
@@ -105,7 +105,7 @@ namespace Allotment.Machine
 
         public async Task DoorsOpenAsync()
         {
-            await _auditLogger.LogAsync("Doors open.");
+            await _auditLogger.AuditLogAsync("Doors open.");
             if (_doorOpenCancel.IsCancellationRequested)
             {
                 var old = _doorOpenCancel;
@@ -121,7 +121,7 @@ namespace Allotment.Machine
         }
         public async Task DoorsCloseAsync()
         {
-            await _auditLogger.LogAsync("Doors close.");
+            await _auditLogger.AuditLogAsync("Doors close.");
             if (_doorCloseCancel.IsCancellationRequested)
             {
                 var old = _doorCloseCancel;

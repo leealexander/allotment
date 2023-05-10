@@ -18,7 +18,7 @@ namespace Allotment.Machine
 
         public async Task RunAsync(IRunContext ctx)
         {
-            await _auditLogger.LogAsync("Machine started.");
+            await _auditLogger.AuditLogAsync("Machine started.");
             await _machine.TurnAllOffAsync();
             await _settingsStore.StoreAsync(await _settingsStore.GetAsync()); // save initial settings if not stored before.
         }

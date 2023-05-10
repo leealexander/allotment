@@ -99,7 +99,7 @@ namespace Allotment.Machine
 
         public async Task StoreWaterLevelReadingAsync(int reading, DateTime dateTakenUtc)
         {
-            await _auditLogger.LogAsync($"Received water level reading {reading} takenAt {dateTakenUtc.ToLocalTime().ToString()}");
+            await _auditLogger.AuditLogAsync($"Received water level reading {reading} takenAt {dateTakenUtc.ToLocalTime().ToString()}");
             if (_machine.IsWaterLevelSensorOn)
             {
                 _currentSessionWaterLevelReadings.Add(new WaterLevelReadingModel
@@ -132,12 +132,12 @@ namespace Allotment.Machine
             _jobManager.RunJobIn(async ctx =>
             {
                 await _machine.WaterLevelSensorPowerOffAsync();
-                
+
+                await _waterLevelService.ProcessReadingsBatchAsync(_currentSessionWaterLevelReadings.ToList());
                 if (knownWaterHeightCm.HasValue)
                 {
                     await _waterLevelStore.ApplyKnownWaterLevelAsync(knownWaterHeightCm.Value);
                 }
-                await _waterLevelService.ProcessReadingsBatchAsync(_currentSessionWaterLevelReadings.ToList());
 
                 _currentSessionWaterLevelReadings.Clear();
             }, settings.Irrigation.WaterLevelSensor.PoweredOnDuration, _waterLevelSensorOffCancellation.Token);
