@@ -3,6 +3,7 @@ using Allotment.Jobs;
 using Allotment.DataStores;
 using Allotment.Machine.Monitoring.Models;
 using System.Collections.Concurrent;
+using Allotment.Services;
 
 namespace Allotment.Machine
 {
@@ -34,6 +35,7 @@ namespace Allotment.Machine
         private readonly ISettingsStore _settingsStore;
         private readonly IWaterLevelStore _waterLevelStore;
         private readonly IAuditLogger<MachineControlService> _auditLogger;
+        private readonly IWaterLevelService _waterLevelService;
         private TimeSpan _waterOnDuration;
         private DateTime ?_waterOnTimeUtc = null;
         private DateTime? _waterLevelOnUtc = null;
@@ -41,7 +43,7 @@ namespace Allotment.Machine
         private CancellationTokenSource? _waterLevelSensorOffCancellation = null;
         private ConcurrentBag<WaterLevelReadingModel> _currentSessionWaterLevelReadings = new();
 
-        public MachineControlService(IMachine machine, IJobManager jobManager, ITempStore tempStore, ISettingsStore settingsStore, IWaterLevelStore waterLevelStore, IAuditLogger<MachineControlService> auditLogger)
+        public MachineControlService(IMachine machine, IJobManager jobManager, ITempStore tempStore, ISettingsStore settingsStore, IWaterLevelStore waterLevelStore, IAuditLogger<MachineControlService> auditLogger, IWaterLevelService waterLevelService)
         {
             _machine = machine;
             _jobManager = jobManager;
@@ -49,6 +51,7 @@ namespace Allotment.Machine
             _settingsStore = settingsStore;
             _waterLevelStore = waterLevelStore;
             _auditLogger = auditLogger;
+            _waterLevelService = waterLevelService;
         }
 
         public string MachineTitle => _machine.Title;
@@ -129,10 +132,12 @@ namespace Allotment.Machine
             _jobManager.RunJobIn(async ctx =>
             {
                 await _machine.WaterLevelSensorPowerOffAsync();
+                
                 if (knownWaterHeightCm.HasValue)
                 {
                     await _waterLevelStore.ApplyKnownWaterLevelAsync(knownWaterHeightCm.Value);
                 }
+                await _waterLevelService.ProcessReadingsBatchAsync(_currentSessionWaterLevelReadings.ToList());
 
                 _currentSessionWaterLevelReadings.Clear();
             }, settings.Irrigation.WaterLevelSensor.PoweredOnDuration, _waterLevelSensorOffCancellation.Token);

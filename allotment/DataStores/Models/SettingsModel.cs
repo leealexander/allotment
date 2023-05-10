@@ -4,7 +4,12 @@
     {
         public DoorsSettingsModel Doors { get; set; } = new();
         public IrrigationSettingsModel Irrigation { get; set; } = new();
+
+#if DEBUG
+        public string ApiJwtSecret { get; set; } = Guid.Parse("ce26592e-29c3-448e-a3d5-d5db0c1b7206").ToString();
+#else
         public string ApiJwtSecret { get; set; } = Guid.NewGuid().ToString();
+#endif
         public SolarChargerSettingsModel SolarChargerSettingsModel { get; set; } = new();
     }
     public record DoorsSettingsModel

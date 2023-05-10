@@ -197,7 +197,7 @@ void loop()
     String payload = "{readingTimeUtc:" +  String(g_readingStartTime) + ",reading:"+  String(g_readingStartTime) + "}";  //Combine the name and value
     Serial.println("Sending: " + payload);
     
-    http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+    http.addHeader("Content-Type", "application/json");
     int httpResponseCode = http.sendRequest("POST", payload);
 
     Serial.println("POST Status code: " + String(httpResponseCode));

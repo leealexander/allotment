@@ -4,7 +4,7 @@
     {
         public static IServiceCollection AddAllotmentServices(this IServiceCollection services)
         {
-            services.AddScoped<IWaterLevelService, WaterLevelService>();
+            services.AddTransient<IWaterLevelService, WaterLevelService>();
             return services;
         }
     }

@@ -122,44 +122,33 @@ namespace Allotment.Services
                 return;
             }
 
-            var runs = new List<List<WaterLevelReadingModel>>();
-            runs.Add(new());
+            var cleanedReadings = RemoveNoise(batch.Select(x => x.Reading));
 
-            List<WaterLevelReadingModel> filteredReadings = new();
-            for(int i = 1; i < batchReadings.Length; i++)
+            if(cleanedReadings.Any())
             {
-                var currentRun = runs.Last();
-                var left = batchReadings[i - 1];
-                var right = batchReadings[i];
-                if (Math.Abs(left.Reading - right.Reading) <= settings.Irrigation.WaterLevelSensor.MaxDevianceBetweenReadingsAllowed)
-                {
-                    if(currentRun.Last() != left)
-                    {
-                        currentRun.Add(left);
-                    }
-                    currentRun.Add(right);
-                }
-                else if (currentRun.Count > 0)
-                {
-                    runs.Add(new());
-                }
-            }
-
-            var maxRunLength = runs.Max(x => x.Count);
-            var qualifyingRuns = runs.Where(x => x.Count > 0 && x.Count == maxRunLength).ToArray();
-            if(qualifyingRuns.Length == 1)
-            {
-                var run = qualifyingRuns[0];
                 await _waterLevelStore.StoreReadingAsync(new WaterLevelReadingModel
                 {
                     DateTakenUtc = DateTime.UtcNow,
-                    Reading = (int)run.Average(x => x.Reading),
+                    Reading = (int)cleanedReadings.Average(),
                 }); 
             }
             else
             {
                 await _auditLogger.LogAsync($"Couldn't store a water level reading as there were no qualifying runs of ~contiguous readings");
             }
+        }
+
+        private static int[] RemoveNoise(IEnumerable<int> readings)
+        {
+            // Calculate average of all numbers
+            var average = readings.Average();
+
+            // Calculate standard deviation of all numbers
+            var variance = readings.Select(num => Math.Pow(num - average, 2)).Average();
+            var stdev = Math.Sqrt(variance);
+
+            // Remove noise numbers (defined as any number more than 1 standard deviation from the mean)
+            return  readings.Where(num => Math.Abs(num - average) <= stdev).ToArray();
         }
     }
 }
