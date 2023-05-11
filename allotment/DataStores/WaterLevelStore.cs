@@ -70,6 +70,10 @@ namespace Allotment.DataStores
 
             var state = await _stateModel.GetAsync();
             state.LastReading = details;
+            if (details.KnownDepthCm.HasValue)
+            {
+                state.KnownReadings.Add(details);
+            }
             await _stateModel.StoreAsync(state);
         }
     }
