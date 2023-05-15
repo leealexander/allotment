@@ -3,6 +3,7 @@ using Allotment.Machine;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.IO.Compression;
 
 namespace allotment.Pages
 {
@@ -60,6 +61,14 @@ namespace allotment.Pages
         {
             await _machineControlService.StopAllAsync();
             return Redirect("/");
+        }
+        public IActionResult OnPostDownloadData()
+        {
+            var tempFile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            ZipFile.CreateFromDirectory(DataStore.BaseDir, tempFile, CompressionLevel.Fastest, includeBaseDirectory: false);
+
+            var stream = new FileStream(tempFile, FileMode.Open);
+            return File(stream, "application/zip", "allotment-data.zip");
         }
     }
 }

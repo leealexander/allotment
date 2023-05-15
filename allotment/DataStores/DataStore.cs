@@ -15,7 +15,7 @@ namespace Allotment.DataStores
             fileSystem.CreateFileDirectory( fi );
         }
 
-        public string BaseDir => $"/data/";
+        public static string BaseDir => $"/data/";
 
         public string GetFilename(DateOnly ?date = null)
         {

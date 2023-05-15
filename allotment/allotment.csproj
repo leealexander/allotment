@@ -1,12 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-allotment-54C2565B-09AF-41FD-84E7-ED065E82D164</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-	<RootNamespace>Allotment</RootNamespace>
+    <DockerfileRunArguments>-v "C:/Data/Allotment:/data:rw"</DockerfileRunArguments>
+    <RootNamespace>Allotment</RootNamespace>
     <AssemblyName>allotment</AssemblyName>
   </PropertyGroup>
 

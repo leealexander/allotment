@@ -145,13 +145,14 @@ namespace Allotment.Machine
 
         public Task<SolarReadingModel?> TakeSolarReadingAsync()
         {
-            var m = new SolarReadingModel();
-            m.DeviceStatus.Controller.Description = "Fake reading";
-            m.DateTakenUtc = DateTime.UtcNow;
-            m.Battery.StateOfCharge = 100;
-            m.SolarPanel.Watts = 20;
-            m.SolarPanel.Voltage = 24;
-            return Task.FromResult((SolarReadingModel?)m);
+            //var m = new SolarReadingModel();
+            //m.DeviceStatus.Controller.Description = "Fake reading";
+            //m.DateTakenUtc = DateTime.UtcNow;
+            //m.Battery.StateOfCharge = 100;
+            //m.SolarPanel.Watts = 20;
+            //m.SolarPanel.Voltage = 24;
+            //return Task.FromResult((SolarReadingModel?)m);
+            return Task.FromResult((SolarReadingModel?)null);
         }
     }
 }
