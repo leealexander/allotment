@@ -80,15 +80,15 @@ namespace Allotment.Machine
 
         public Task<bool> TryGetTempDetailsAsync(Action<TempDetails> tempDetailsFound)
         {
-            var now = DateTime.Now;
-            var hour = now.Hour;
-            tempDetailsFound(new TempDetails
-            {
-                Temperature = new Temperature(_dayTemp[hour + 1], UnitsNet.Units.TemperatureUnit.DegreeCelsius),
-                Humidity = new RelativeHumidity(_dayHum[hour + 1], UnitsNet.Units.RelativeHumidityUnit.Percent),
-                TimeTakenUtc = new DateTime(now.Year, now.Month, now.Day, hour, 0, 0, DateTimeKind.Utc)
-            });
-            return Task.FromResult(true);
+            //var now = DateTime.Now;
+            //var hour = now.Hour;
+            //tempDetailsFound(new TempDetails
+            //{
+            //    Temperature = new Temperature(_dayTemp[hour + 1], UnitsNet.Units.TemperatureUnit.DegreeCelsius),
+            //    Humidity = new RelativeHumidity(_dayHum[hour + 1], UnitsNet.Units.RelativeHumidityUnit.Percent),
+            //    TimeTakenUtc = new DateTime(now.Year, now.Month, now.Day, hour, 0, 0, DateTimeKind.Utc)
+            //});
+            return Task.FromResult(false);
         }
 
         public async Task TurnAllOffAsync()

@@ -1,6 +1,7 @@
 ﻿using Allotment.DataStores;
 using Allotment.DataStores.Models;
 using Allotment.Machine.Monitoring.Models;
+using Allotment.Utils;
 
 namespace Allotment.Services
 {
@@ -127,7 +128,7 @@ namespace Allotment.Services
                 return;
             }
 
-            var cleanedReadings = RemoveNoise(batch.Select(x => x.Reading));
+            var cleanedReadings = batch.Select(x => x.Reading).RemoveNoise();
 
             if(cleanedReadings.Any())
             {
@@ -141,19 +142,6 @@ namespace Allotment.Services
             {
                 await _auditLogger.AuditLogAsync($"Couldn't store a water level reading as there were no qualifying runs of ~contiguous readings");
             }
-        }
-
-        private static int[] RemoveNoise(IEnumerable<int> readings)
-        {
-            // Calculate average of all numbers
-            var average = readings.Average();
-
-            // Calculate standard deviation of all numbers
-            var variance = readings.Select(num => Math.Pow(num - average, 2)).Average();
-            var stdev = Math.Sqrt(variance);
-
-            // Remove noise numbers (defined as any number more than 1 standard deviation from the mean)
-            return  readings.Where(num => Math.Abs(num - average) <= stdev).ToArray();
         }
     }
 }

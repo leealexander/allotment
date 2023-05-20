@@ -11,7 +11,7 @@ namespace Allotment.DataStores
         {
             _fileName = fileName;
             _fileSystem = fileSystem;
-            var fi = new FileInfo(Path.Combine(BaseDir, fileName));
+            var fi = new FileInfo(Path.Combine(BaseDir, GetFilename()));
             fileSystem.CreateFileDirectory( fi );
         }
 

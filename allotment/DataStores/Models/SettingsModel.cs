@@ -2,6 +2,7 @@
 {
     public record SettingsModel
     {
+        public AutoPilot AutoPilot { get; set; } = new();
         public DoorsSettingsModel Doors { get; set; } = new();
         public IrrigationSettingsModel Irrigation { get; set; } = new();
 
@@ -15,6 +16,13 @@
     public record DoorsSettingsModel
     {
         public TimeSpan ActionPowerOnDuration { get; set; } = TimeSpan.FromSeconds(50);
+    }
+
+    public record AutoPilot
+    {
+        public bool Enabled { get; set; } = true;
+        public int CloseDoorsWhenTempBelow { get; set; } = 20;
+        public int OpenDoorsWhenTempGreater { get; set; } = 29;
     }
 
     public record SolarChargerSettingsModel

@@ -50,6 +50,7 @@ services.AddJobs()
     .StartWith<MachineStartup>()
     .StartWith<TempMonitor>()
     .StartWith<SolarMonitor>()
+    .StartWith<AutoPilot>()
     .StartWith<WaterLevelMonitor>();
 
 

@@ -8,6 +8,7 @@ namespace Allotment.Machine
         {
             services.AddSingleton<TempMonitor>();
             services.AddSingleton<SolarMonitor>();
+            services.AddSingleton<AutoPilot>();
             services.AddSingleton<IMachineControlService, MachineControlService>();
             services.AddSingleton<ISolarReader, SolarReader>();
             

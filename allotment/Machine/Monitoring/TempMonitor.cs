@@ -32,8 +32,11 @@ namespace Allotment.Machine.Monitoring
                 {
                     await _tempStore.StoreReadingAsync(details);
                 }
-                ctx.RunAgainIn(readTemp ? TimeSpan.FromMinutes(1) : TimeSpan.FromSeconds(1));
-                return;
+                else
+                {
+                    ctx.RunAgainIn(TimeSpan.FromSeconds(10));
+                    return;
+                }
             }
             catch (Exception ex)
             {
