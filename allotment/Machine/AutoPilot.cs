@@ -29,11 +29,12 @@ namespace Allotment.Machine
             }
 
             var temp = await GetTempAsync();
+            _auditLogger.LogInformation($"Running AutoPilot temp={temp}");
             if (temp != null)
             {
                 if (temp < settings.CloseDoorsWhenTempBelow)
                 {
-                    if(_machine.LastDoorCommand == null || _machine?.LastDoorCommand == LastDoorCommand.DoorsOpen)
+                    if (_machine.LastDoorCommand == null || _machine?.LastDoorCommand == LastDoorCommand.DoorsOpen)
                     {
                         await _auditLogger.AuditLogAsync($"Closing doors as temp {temp}c is below {settings.CloseDoorsWhenTempBelow}c");
                         await _machine.DoorsCloseAsync();
