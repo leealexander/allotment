@@ -71,7 +71,15 @@
                     </form>
                 </li>
             </ul>
-            <vc:water-level/>
+            <div class="mt-3">
+                <vc:water-level/>
+            </div>
+
+            <form class="mt-3" asp-page-handler="toggleAutoPilot" method="post">
+                <input type="checkbox" asp-for="@Model.AutopilotEnabled" data-toggle="toggle" onChange="this.form.submit()" />
+                <label asp-for="@Model.AutopilotEnabled">Autopilot</label>
+            </form>
+
         </div>
     </nav>
 

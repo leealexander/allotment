@@ -26,7 +26,7 @@ namespace Allotment
                 options.ForwardDefaultSelector = context =>
                 {
                     // filter by auth type
-                    string authorization = context.Request.Headers[HeaderNames.Authorization];
+                    string ?authorization = context.Request.Headers[HeaderNames.Authorization];
                     if (!string.IsNullOrEmpty(authorization) && authorization.StartsWith("Bearer "))
                     {
                         return "Bearer";
@@ -66,7 +66,7 @@ namespace Allotment
                 _config = config;
             }
 
-            public void Configure(string name, JwtBearerOptions options)
+            public void Configure(string ?name, JwtBearerOptions options)
             {
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settingsStore.Get().ApiJwtSecret));
 

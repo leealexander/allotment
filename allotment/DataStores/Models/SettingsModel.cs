@@ -2,7 +2,7 @@
 {
     public record SettingsModel
     {
-        public AutoPilot AutoPilot { get; set; } = new();
+        public AutoPilot Autopilot { get; set; } = new();
         public DoorsSettingsModel Doors { get; set; } = new();
         public IrrigationSettingsModel Irrigation { get; set; } = new();
 

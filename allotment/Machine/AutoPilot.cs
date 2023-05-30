@@ -22,47 +22,43 @@ namespace Allotment.Machine
 
         public async Task RunAsync(IRunContext ctx)
         {
-            var settings = (await _settingsStore.GetAsync()).AutoPilot;
-            if (!settings.Enabled)
+            var settings = (await _settingsStore.GetAsync()).Autopilot;
+            if (settings.Enabled)
             {
-                return;
-            }
-
-            var temp = await GetTempAsync();
-            _auditLogger.LogInformation($"Running AutoPilot temp={temp}");
-            if (temp != null)
-            {
-                if (temp < settings.CloseDoorsWhenTempBelow)
+                var temp = await GetTempAsync();
+                _auditLogger.LogInformation($"Running AutoPilot temp={temp}");
+                if (temp != null)
                 {
-                    if (_machine.LastDoorCommand == null || _machine?.LastDoorCommand == LastDoorCommand.DoorsOpen)
+                    if (temp < settings.CloseDoorsWhenTempBelow)
                     {
-                        await _auditLogger.AuditLogAsync($"Closing doors as temp {temp}c is below {settings.CloseDoorsWhenTempBelow}c");
-                        await _machine.DoorsCloseAsync();
+                        if (_machine.LastDoorCommand == null || _machine?.LastDoorCommand == LastDoorCommand.DoorsOpen)
+                        {
+                            await _auditLogger.AuditLogAsync($"Closing doors as temp {temp}c is below {settings.CloseDoorsWhenTempBelow}c");
+                            await _machine.DoorsCloseAsync();
+                        }
                     }
-                }
 
-                if (temp > settings.OpenDoorsWhenTempGreater)
-                {
-                    if (_machine.LastDoorCommand == null || _machine?.LastDoorCommand == LastDoorCommand.DoorsClosed)
+                    if (temp > settings.OpenDoorsWhenTempGreater)
                     {
-                        await _auditLogger.AuditLogAsync($"Opening doors as temp {temp}c is higher than {settings.OpenDoorsWhenTempGreater}c");
-                        await _machine.DoorsOpenAsync();
+                        if (_machine.LastDoorCommand == null || _machine.LastDoorCommand == LastDoorCommand.DoorsClosed)
+                        {
+                            await _auditLogger.AuditLogAsync($"Opening doors as temp {temp}c is higher than {settings.OpenDoorsWhenTempGreater}c");
+                            await _machine.DoorsOpenAsync();
+                        }
                     }
+                    ctx.RunAgainIn(TimeSpan.FromMinutes(5));
+                    return;
                 }
-                ctx.RunAgainIn(TimeSpan.FromMinutes(5));
-            }
-            else
-            {
-                ctx.RunAgainIn(TimeSpan.FromSeconds(10));
             }
 
+            ctx.RunAgainIn(TimeSpan.FromSeconds(10));
         }
 
         private async Task<int?> GetTempAsync()
         {
             int? reading = null;
             var currentReading = _tempStore.Current;
-            if (currentReading == null)
+            if (currentReading == null || (DateTime.UtcNow - currentReading.TimeTakenUtc) > TimeSpan.FromMinutes(10))
             {
                 var solarReading = await _solarStore.GetCurrentReadingAsync();
                 if(solarReading != null)
