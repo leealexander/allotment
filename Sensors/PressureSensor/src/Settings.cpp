@@ -36,6 +36,10 @@ MqttDetails const  loadMqttSettingsFromPreferences()
 
     g_preferences.end();
 
+    settings.BaseTopic.trim();
+    settings.BrockerUrl.trim();
+    settings.Username.trim();
+    
     Serial.println("Loaded mqtt preferences: " + settings.ToString());
     return settings;
 }

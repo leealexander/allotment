@@ -5,5 +5,5 @@ bool InitMqtt();
 
 bool ShouldTakeReading();
 bool PostReading(int reading);
-
+void ProcessSubscriptions();
 #endif

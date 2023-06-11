@@ -20,7 +20,7 @@ struct MqttDetails
 
     inline String ToString() const 
     {
-        return "MQTT: Url:" + BrockerUrl + ", Port: " + BrockerPort + ", Username: " + Username + ", Password:" +  Password;
+        return "MQTT: Url:" + BrockerUrl + ", Port: " + BrockerPort + ", Username: " + Username + ", Password:" +  Password + ", Topic='" + BaseTopic + "'";
     }
 };
 

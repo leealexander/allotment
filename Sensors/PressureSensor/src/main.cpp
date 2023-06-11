@@ -71,7 +71,7 @@ void setup()
 
 
 unsigned long g_lastSample;
-bool ShouldCycle()
+bool ShouldCycleSleep()
 {
   auto current = millis();
   if(current - g_lastSample < 250)
@@ -87,7 +87,14 @@ void loop()
 {
   g_resetButton.read();
 
-  if(ShouldCycle() && !ShouldTakeReading())
+  if(ShouldCycleSleep())
+  {
+    return;
+  }
+  
+  ProcessSubscriptions();
+
+  if(!ShouldTakeReading())
   {
     return;
   }
@@ -99,12 +106,12 @@ void loop()
   if(g_readings.size() == maxReadings)
   {
     auto filteredResults = removeNoiseValues(g_readings, 1.0);
+    g_readings.clear();
     if(filteredResults.size() >= minReadingsCount)
     {
       auto average = calculateAverage(filteredResults);
       Serial.println("Avg Reading=" + String(average));
       PostReading(average);
     }
-    g_readings.clear();
   }
 }

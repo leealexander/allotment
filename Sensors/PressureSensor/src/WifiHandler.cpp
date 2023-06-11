@@ -78,6 +78,7 @@ void saveSettings()
   settings.BaseTopic = g_brockerBaseTopic.getValue();
   if(settings.BaseTopic.length() > 0 && !settings.BaseTopic.endsWith("/"))
   {
+    settings.BaseTopic.trim();
     settings.BaseTopic += "/";
   }
 
