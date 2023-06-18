@@ -57,10 +57,7 @@ namespace Allotment.Pages
         {
             try
             {
-                if (KnownDepthCm.HasValue)
-                {
-                    await _machineControlService.WaterLevelMonitorOnAsync(KnownDepthCm.Value);
-                }
+                await _machineControlService.WaterLevelMonitorOnAsync(KnownDepthCm);
             }
             catch(Exception ex)
             {

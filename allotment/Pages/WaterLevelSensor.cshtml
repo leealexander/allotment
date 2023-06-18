@@ -35,7 +35,7 @@
     <form method="post" asp-page-handler="TakeKnownReading">
         @Html.ValidationSummary()
         <div class="form-group">
-            <label asp-for="KnownDepthCm">Enter Known Depth cm:</label>
+            <label asp-for="KnownDepthCm">Enter Known Depth cm (Optional):</label>
             <input asp-for="KnownDepthCm" />
         </div>
         <span asp-validation-for="KnownDepthCm"></span>
