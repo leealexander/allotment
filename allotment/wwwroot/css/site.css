@@ -46,3 +46,22 @@ body {
         transform: scale(1);
     }
 }
+
+.barrel {
+    background: #ddd;
+    width: 100px;
+    border-radius: 30px 30px 6px 6px;
+    height: 200px;
+    padding: 6px;
+    box-shadow: 3px 3px 3px #efefef;
+    margin-bottom: 4px;
+}
+
+.water-level {
+    background: blue;
+    width: 87px;
+    margin-top: 5px;
+    height: 190px; /*190px; full*/
+    z-index: 1;
+    border-radius: 28px 28px 10px 10px;
+}

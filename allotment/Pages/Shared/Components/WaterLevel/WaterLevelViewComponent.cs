@@ -12,14 +12,15 @@ namespace Allotment.Pages.Shared.Components.WaterLevel
             _waterLevelService = waterLevelService;
         }
 
+
         public async Task<IViewComponentResult> InvokeAsync()
         {
             var model = new Models.WaterLevelViewModel();
-            var percentFull = await _waterLevelService.GetPercentageFullAsync();
+            model.Percent = await _waterLevelService.GetPercentageFullAsync();
             var level = await _waterLevelService.GetLevelAsync();
-            if(level != null && percentFull != null)
+            if(level != null && model.Percent != null)
             {
-                model.WaterLevelStatus = $"{percentFull}% {level}cm";
+                model.WaterLevelStatus = $"{model.Percent}% {level}cm";
             }
             else
             {
