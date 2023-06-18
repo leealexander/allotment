@@ -49,7 +49,7 @@ namespace Allotment.Services
         public async Task<int?> GetLevelAsync()
         {
             var state = await GetStateAsync();
-            var knownReadings = state.KnownReadings;
+            var knownReadings = state.KnownReadings.OrderBy(x=>x.Reading).ToList();
             if(knownReadings.Count == 0)
             {
                 return null;
