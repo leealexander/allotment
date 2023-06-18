@@ -61,7 +61,7 @@ namespace Allotment.Machine.Readers
                     _readings.Add(new WaterLevelReadingModel
                     {
                         DateTakenUtc = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(int.Parse(match.Groups[1].Value)),
-                        Reading = int.Parse(match.Groups[1].Value)
+                        Reading = int.Parse(match.Groups[2].Value)
                     });
                 }
                 return Task.CompletedTask;
