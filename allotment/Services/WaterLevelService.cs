@@ -39,7 +39,7 @@ namespace Allotment.Services
                 {
                     var maxDepth = settings.Irrigation.WaterLevelSensor.WaterSourceMaxDepthCm;
                     var depth = Math.Min(levelCm.Value, maxDepth);
-                    return (int)(depth / maxDepth * 100d);
+                    return (int)((double)depth / maxDepth * 100d);
                 }
             }
 
