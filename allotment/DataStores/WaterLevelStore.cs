@@ -64,8 +64,8 @@ namespace Allotment.DataStores
                     state.KnownReadings.Remove(reading);
                 }
                 state.KnownReadings.Add(details);
-                await _stateModel.StoreAsync(state);
             }
+            await _stateModel.StoreAsync(state);
         }
     }
 }
