@@ -43,8 +43,18 @@
 
         public TimeSpan PoweredOnDuration { get; set; } = TimeSpan.FromMinutes(3);
         public TimeSpan PeriodicCheckDuration { get; set; } = TimeSpan.FromMinutes(60);
-        public int MaxDevianceBetweenReadingsAllowed { get; set; } = 5; // taken from various tests of the sensor
-        public int MinReadingsPerSensonOnSession { get; set; } = 5;
+
+        public MqttSettings Mqtt { get; set; } = new();
+    }
+
+    public record MqttSettings
+    {
+        public string ?Server { get; set; }
+        public int ServerPort { get; set; } = 1883;
+
+        public string? Username { get; set; }
+        public string? Password { get; set; }
+        public string ?WaterPressureTopic { get; set; }
     }
 
 }

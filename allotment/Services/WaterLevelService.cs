@@ -10,7 +10,7 @@ namespace Allotment.Services
         Task<int?> GetLevelAsync();
         Task<int?> GetPercentageFullAsync();
 
-        Task ProcessReadingsBatchAsync(IEnumerable<WaterLevelReadingModel> batch);
+        Task ProcessReadingsBatchAsync(IEnumerable<WaterLevelReadingModel> batch, int ?knownWaterHeightCm = null);
     }
 
     public class WaterLevelService : IWaterLevelService
@@ -64,7 +64,7 @@ namespace Allotment.Services
 
             if (position >= 0)
             {
-                return knownReadings[position].Reading;
+                return knownReadings[position].KnownDepthCm;
             }
             position = ~position;
 
@@ -116,31 +116,23 @@ namespace Allotment.Services
             return _sensorState;
         }
 
-        public async Task ProcessReadingsBatchAsync(IEnumerable<WaterLevelReadingModel> batch)
+        public async Task ProcessReadingsBatchAsync(IEnumerable<WaterLevelReadingModel> batch, int? knownWaterHeightCm = null)
         {
             _auditLogger.LogInformation($"Processing {batch.Count()} readings ");
-            var settings = await _settingsStore.GetAsync();
-            var batchReadings = batch.OrderBy(x => x.DateTakenUtc).ToArray();
-            var minReadings = settings.Irrigation.WaterLevelSensor.MinReadingsPerSensonOnSession;
-            if (batchReadings.Length < minReadings)
-            {
-                await _auditLogger.AuditLogAsync($"Couldn't store a water level reading as Not enough readings were taken min {minReadings}: '{string.Join(", ", batchReadings.Select(x=>x.Reading))}");
-                return;
-            }
 
-            var cleanedReadings = batch.Select(x => x.Reading).RemoveNoise();
 
-            if(cleanedReadings.Any())
+            if(batch.Any())
             {
                 await _waterLevelStore.StoreReadingAsync(new WaterLevelReadingModel
                 {
+                    KnownDepthCm = knownWaterHeightCm,
                     DateTakenUtc = DateTime.UtcNow,
-                    Reading = (int)cleanedReadings.Average(),
+                    Reading = (int)batch.Select(x=>x.Reading).Average(),
                 }); 
             }
             else
             {
-                await _auditLogger.AuditLogAsync($"Couldn't store a water level reading as there were no qualifying runs of ~contiguous readings");
+                await _auditLogger.AuditLogAsync($"No water pressure readings were available");
             }
         }
     }

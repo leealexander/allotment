@@ -40,11 +40,13 @@ namespace Allotment.Machine
 
                     if (temp > settings.OpenDoorsWhenTempGreater)
                     {
+#pragma warning disable CS8602 // Dereference of a possibly null reference. weird warning
                         if (_machine.LastDoorCommand == null || _machine.LastDoorCommand == LastDoorCommand.DoorsClosed)
                         {
                             await _auditLogger.AuditLogAsync($"Opening doors as temp {temp}c is higher than {settings.OpenDoorsWhenTempGreater}c");
                             await _machine.DoorsOpenAsync();
                         }
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
                     }
                     ctx.RunAgainIn(TimeSpan.FromMinutes(5));
                     return;

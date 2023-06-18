@@ -9,7 +9,6 @@ namespace Allotment.DataStores
 {
     public interface IWaterLevelStore
     {
-        Task ApplyKnownWaterLevelAsync(int levelCm);
         Task<ICollection<WaterLevelReadingModel>> GetReadingsAsync();
         Task StoreReadingAsync(WaterLevelReadingModel details);
     }
@@ -48,19 +47,6 @@ namespace Allotment.DataStores
             return readings;
         }
 
-        public async Task ApplyKnownWaterLevelAsync(int levelCm)
-        {
-            var lastReading = (await GetReadingsAsync()).LastOrDefault();
-            if(lastReading != null )
-            {
-                var settings = await _settingsStore.GetAsync();
-                if(DateTime.UtcNow - lastReading.DateTakenUtc <= settings.Irrigation.WaterLevelSensor.PoweredOnDuration)
-                {
-                    lastReading.KnownDepthCm = levelCm;
-                    await StoreReadingAsync(lastReading);
-                }
-            }
-        }
 
         public async Task StoreReadingAsync(WaterLevelReadingModel details)
         {
@@ -72,9 +58,14 @@ namespace Allotment.DataStores
             state.LastReading = details;
             if (details.KnownDepthCm.HasValue)
             {
+                var reading = state.KnownReadings.SingleOrDefault(x=>x.KnownDepthCm == details.KnownDepthCm.Value);
+                if(reading != null)
+                {
+                    state.KnownReadings.Remove(reading);
+                }
                 state.KnownReadings.Add(details);
+                await _stateModel.StoreAsync(state);
             }
-            await _stateModel.StoreAsync(state);
         }
     }
 }

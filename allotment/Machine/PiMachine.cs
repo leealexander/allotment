@@ -1,6 +1,7 @@
 ﻿using Allotment.DataStores;
 using Allotment.Machine.Models;
 using Allotment.Machine.Monitoring.Models;
+using Allotment.Machine.Readers;
 using Iot.Device.DHTxx;
 using System.Device.Gpio;
 

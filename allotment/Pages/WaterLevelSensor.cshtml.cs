@@ -46,9 +46,16 @@ namespace Allotment.Pages
 
         public async Task OnPost()
         {
-            if (KnownDepthCm.HasValue)
+            try
             {
-                await _machineControlService.WaterLevelMonitorOnAsync(KnownDepthCm.Value);
+                if (KnownDepthCm.HasValue)
+                {
+                    await _machineControlService.WaterLevelMonitorOnAsync(KnownDepthCm.Value);
+                }
+            }
+            catch(Exception ex)
+            {
+                ModelState.AddModelError("general-error", ex.Message);
             }
         }
     }

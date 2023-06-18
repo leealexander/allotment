@@ -1,4 +1,5 @@
 ﻿using Allotment.Machine.Monitoring;
+using Allotment.Machine.Readers;
 
 namespace Allotment.Machine
 {
@@ -11,6 +12,7 @@ namespace Allotment.Machine
             services.AddSingleton<AutoPilot>();
             services.AddSingleton<IMachineControlService, MachineControlService>();
             services.AddSingleton<ISolarReader, SolarReader>();
+            services.AddScoped<IPressureReader, PressureReader>();
             
             services.AddSingleton<WaterLevelMonitor>();
             

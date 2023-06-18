@@ -25,25 +25,7 @@ namespace Allotment
                 });
             });
 
-            route.MapPost("/api/waterlevel/readings", async (PostReadingApiModel model, IHttpContextAccessor httpAccessor, IMachineControlService service, ISettingsStore settingsStore) =>
-            {
-                var httpContext = httpAccessor.HttpContext;
-
-                var settings = await settingsStore.GetAsync();
-
-                var dt = ToDateTime(model.ReadingTimeUtc);
-                await service.StoreWaterLevelReadingAsync(model.Reading, dt);
-
-                return Results.Ok();
-            });
-
             return route;
         }
-
-        private static DateTime ToDateTime(int timet)
-        {
-            return new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(timet);
-        }
-
     }
 }
