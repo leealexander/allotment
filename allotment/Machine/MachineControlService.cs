@@ -137,7 +137,7 @@ namespace Allotment.Machine
                     await _machine.WaterLevelSensorPowerOffAsync();
                     var readings = (await reader.StopListeningAsync()).Where(x => x.DateTakenUtc >= _waterLevelOnUtc);
 
-                    await _waterLevelService.ProcessReadingsBatchAsync(readings.ToList());
+                    await _waterLevelService.ProcessReadingsBatchAsync(readings.ToList(), knownWaterHeightCm);
                 }
                 finally
                 {
