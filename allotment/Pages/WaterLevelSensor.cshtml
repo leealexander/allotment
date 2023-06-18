@@ -13,9 +13,26 @@
     <canvas class="my-4 w-100 chartjs-render-monitor" id="myChart" style="display: block; width: 2085px; height: 880px;" width="2085" height="880"></canvas>
 </div>
 
+<h2>Calibration readings</h2>
+<form class="mt-3" asp-page-handler="SetKnownReadings" method="post">
+    <div class="form-horizontal">
+        <div class="form-group">
+            <div class="col-md-6">
+                <textarea asp-for="KnownReadings" rows="20" cols="20" spellcheck="false" class="form-control" required=true></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="mt-3">
+        <button type="submit" class="btn btn-primary" name="Action" value="Save">
+            Save readings
+        </button>
+    </div>
+</form>
+
+
 @if (!Model.IsWaterSensorOn)
 {
-    <form method="post">
+    <form method="post" asp-page-handler="TakeKnownReading">
         @Html.ValidationSummary()
         <div class="form-group">
             <label asp-for="KnownDepthCm">Enter Known Depth cm:</label>
