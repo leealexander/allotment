@@ -19,20 +19,6 @@ namespace Allotment.Machine
         private int[] _dayTemp = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23 };
         private int[] _dayHum = new[] { 70, 72, 76, 78, 80, 82, 84, 90, 89, 84, 75, 70, 68, 67, 66, 65, 65, 58, 62, 63, 65, 67, 68 };
 
-        private int[] _samplePressureReadings = new[] 
-        {
-            4081, // 4cm
-            4124, // 30cm
-            4122, // 28cm
-            4121, // 26cm
-            4119, // 24cm
-            4116, // 22cm
-            4109, // 20cm
-            4098, // 10cm
-            4084, // 05cm
-            4123, // 30cm
-        };
-        private int _samplePressureReadingsIndex = 0;
 
         public FakeMachine(IJobManager jobManager, IAuditLogger<FakeMachine> auditLogger, IWaterLevelStore waterLevelStore)
         {
@@ -134,7 +120,6 @@ namespace Allotment.Machine
         {
             await _auditLogger.AuditLogAsync("Water butt level sensor on.");
             _isWaterLevelMonitorOn = true;
-            await _waterLevelStore.StoreReadingAsync( new WaterLevelReadingModel { DateTakenUtc = DateTime.UtcNow, Reading = _samplePressureReadings[_samplePressureReadingsIndex++] });
         }
 
         public async Task WaterLevelSensorPowerOffAsync()

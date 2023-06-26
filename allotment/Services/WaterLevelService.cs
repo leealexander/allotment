@@ -10,7 +10,7 @@ namespace Allotment.Services
         Task<int?> GetLevelAsync();
         Task<int?> GetPercentageFullAsync();
 
-        Task ProcessReadingsBatchAsync(IEnumerable<WaterLevelReadingModel> batch, int ?knownWaterHeightCm = null);
+        Task ProcessReadingsBatchAsync(IEnumerable<WaterLevelReadingModel> batch, string? annotation = null, int ?knownWaterHeightCm = null);
     }
 
     public class WaterLevelService : IWaterLevelService
@@ -39,7 +39,7 @@ namespace Allotment.Services
                 {
                     var maxDepth = settings.Irrigation.WaterLevelSensor.WaterSourceMaxDepthCm;
                     var depth = Math.Min(levelCm.Value, maxDepth);
-                    return (int)((double)depth / maxDepth * 100d);
+                    return Math.Max(0, (int)((double)depth / maxDepth * 100d));
                 }
             }
 
@@ -116,7 +116,7 @@ namespace Allotment.Services
             return _sensorState;
         }
 
-        public async Task ProcessReadingsBatchAsync(IEnumerable<WaterLevelReadingModel> batch, int? knownWaterHeightCm = null)
+        public async Task ProcessReadingsBatchAsync(IEnumerable<WaterLevelReadingModel> batch, string? annotation = null, int? knownWaterHeightCm = null)
         {
             _auditLogger.LogInformation($"Processing {batch.Count()} readings ");
 
@@ -127,6 +127,7 @@ namespace Allotment.Services
                 {
                     KnownDepthCm = knownWaterHeightCm,
                     DateTakenUtc = DateTime.UtcNow,
+                    Annotation = annotation?.Replace(",", ""),
                     Reading = (int)batch.Select(x=>x.Reading).Average(),
                 }); 
             }

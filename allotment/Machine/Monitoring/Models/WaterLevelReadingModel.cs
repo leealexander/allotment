@@ -5,6 +5,7 @@
         public static readonly IComparer<WaterLevelReadingModel> ReadingsComparer = new ReadingComparer();
         public int? KnownDepthCm { get; set; }
         public int Reading { get; set; }
+        public string? Annotation { get; set; }
         public DateTime DateTakenUtc { get; set; }
 
         private class ReadingComparer : IComparer<WaterLevelReadingModel>

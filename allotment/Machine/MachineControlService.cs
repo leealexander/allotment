@@ -21,7 +21,7 @@ namespace Allotment.Machine
         Task WaterOffAsync();
         Task StopAllAsync();
 
-        Task WaterLevelMonitorOnAsync( int ?knownWaterHeightCm = null );
+        Task WaterLevelMonitorOnAsync(string? annotation = null, int ?knownWaterHeightCm = null );
 
         public CurrentStatus Status { get; }
     }
@@ -106,7 +106,7 @@ namespace Allotment.Machine
         }
 
 
-        public async Task WaterLevelMonitorOnAsync(int? knownWaterHeightCm = null)
+        public async Task WaterLevelMonitorOnAsync(string ?annotation = null, int? knownWaterHeightCm = null)
         {
             if(_machine.IsWaterLevelSensorOn)
             {
@@ -137,7 +137,7 @@ namespace Allotment.Machine
                     await _machine.WaterLevelSensorPowerOffAsync();
                     var readings = (await reader.StopListeningAsync()).Where(x => x.DateTakenUtc >= _waterLevelOnUtc);
 
-                    await _waterLevelService.ProcessReadingsBatchAsync(readings.ToList(), knownWaterHeightCm);
+                    await _waterLevelService.ProcessReadingsBatchAsync(readings.ToList(),annotation, knownWaterHeightCm);
                 }
                 finally
                 {
@@ -177,7 +177,11 @@ namespace Allotment.Machine
                 _waterOnDuration = settings.Irrigation.WaterOnDuration;
                 _waterOnTimeUtc = DateTime.UtcNow;
                 _waterOffCancellation = new CancellationTokenSource();
-                _jobManager.RunJobIn(ctx => _machine.WaterOffAsync(), _waterOnDuration, _waterOffCancellation.Token);
+                _jobManager.RunJobIn(async ctx =>
+                {
+                    await _machine.WaterOffAsync();
+                    await WaterLevelMonitorOnAsync("watered");
+                }, _waterOnDuration, _waterOffCancellation.Token);
             }
         }
 

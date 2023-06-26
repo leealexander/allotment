@@ -35,29 +35,49 @@ namespace Allotment.Pages
         [BindProperty]
         public int ?KnownDepthCm { get; set; }
 
+        [BindProperty]
+        public string? Annotation { get; set; }
+
         public async Task OnGet()
         {
             var levels = await _knownLevelStore.GetAsync();
             KnownReadings = JsonSerializer.Serialize(levels, new JsonSerializerOptions { WriteIndented = true });
             Readings = await _waterLevelStore.GetReadingsAsync();
+            LevelReadings(Readings);
+            DateTime? lastDate = null;
             GraphLabels = new HtmlString(string.Join(',', Readings.Select(x =>
             {
+                var dt = x.DateTakenUtc.ToLocalTime();
+                var showDay = lastDate == null || lastDate != dt.Date;
+                lastDate = dt.Date;
+                var dayText = showDay ? $" {dt.DayOfWeek.ToString()}" : string.Empty;
+                var dateLabel = $"{dayText} {dt:HH.mm}";
+                var annotation = string.IsNullOrWhiteSpace(x.Annotation) ? string.Empty : $" {x.Annotation} ";
                 if (x.KnownDepthCm.HasValue)
                 {
-                    return $"'{x.KnownDepthCm}cm {x.DateTakenUtc:HH.mm.ss}'";
+                    return $"'{annotation}{x.KnownDepthCm}cm {dateLabel}'";
                 }
 
-                return $"'{x.DateTakenUtc:HH.mm.ss}'";
+                return $"'{annotation}{dateLabel}'";
             })));
             GraphPressureReadings = new HtmlString(string.Join(',', Readings.Select(x => $"{x.Reading}")));
             IsWaterSensorOn = _machineControlService.IsWaterLevelSensorOn;
+        }
+
+        private void LevelReadings(IEnumerable<WaterLevelReadingModel> readings)
+        {
+            var minValue = readings.Select(x=>x.Reading).Min();
+            foreach(var reading in readings)
+            {
+                reading.Reading -= minValue;
+            }
         }
 
         public async Task OnPostTakeKnownReading()
         {
             try
             {
-                await _machineControlService.WaterLevelMonitorOnAsync(KnownDepthCm);
+                await _machineControlService.WaterLevelMonitorOnAsync(Annotation, KnownDepthCm);
             }
             catch(Exception ex)
             {

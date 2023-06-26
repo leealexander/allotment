@@ -33,15 +33,18 @@ namespace Allotment.DataStores
             var fileName = GetFilename();
             if (File.Exists(fileName))
             {
-                readings.AddRange(from fl in await File.ReadAllLinesAsync(fileName)
-                                  let split = fl.Split(',')
-                                  where split.Length == 3
-                                  select new WaterLevelReadingModel
-                                  {
-                                      DateTakenUtc = DateTime.Parse(split[0]).ToUniversalTime(),
-                                      Reading = int.Parse(split[1]),
-                                      KnownDepthCm = string.IsNullOrWhiteSpace(split[2]) ? null : int.Parse(split[2]),
-                                  });
+                var after = DateTime.UtcNow.AddDays(-2);
+                var allReadings = from fl in await File.ReadAllLinesAsync(fileName)
+                               let split = fl.Split(',')
+                               where split.Length >= 3
+                               select new WaterLevelReadingModel
+                               {
+                                   DateTakenUtc = DateTime.Parse(split[0]).ToUniversalTime(),
+                                   Reading = int.Parse(split[1]),
+                                   KnownDepthCm = string.IsNullOrWhiteSpace(split[2]) ? null : int.Parse(split[2]),
+                                   Annotation = split.Length > 3 ? split[3] : string.Empty,
+                               };
+                readings.AddRange(allReadings.Where(x=>x.DateTakenUtc > after));
             }
 
             return readings;
@@ -52,7 +55,7 @@ namespace Allotment.DataStores
         {
             _auditLogger.LogInformation($"Storing waterlevel processed reading {details.Reading} at '{GetFilename()}'");
             var knownDepth = details.KnownDepthCm.HasValue ? details.KnownDepthCm.Value.ToString() : "";
-            await File.AppendAllLinesAsync(GetFilename(), new[] { $"{details.DateTakenUtc:o},{details.Reading},{knownDepth}"});
+            await File.AppendAllLinesAsync(GetFilename(), new[] { $"{details.DateTakenUtc:o},{details.Reading},{knownDepth},{details.Annotation}"});
 
             var state = await _stateModel.GetAsync();
             state.LastReading = details;
