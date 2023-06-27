@@ -33,7 +33,7 @@ namespace Allotment.DataStores
             var fileName = GetFilename();
             if (File.Exists(fileName))
             {
-                var after = DateTime.UtcNow.AddDays(-2);
+                var after = DateTime.UtcNow.AddHours(-24);
                 var allReadings = from fl in await File.ReadAllLinesAsync(fileName)
                                let split = fl.Split(',')
                                where split.Length >= 3
