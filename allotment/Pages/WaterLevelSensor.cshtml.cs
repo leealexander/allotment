@@ -66,10 +66,13 @@ namespace Allotment.Pages
 
         private void LevelReadings(IEnumerable<WaterLevelReadingModel> readings)
         {
-            var minValue = readings.Select(x=>x.Reading).Min();
-            foreach(var reading in readings)
+            if (readings.Any())
             {
-                reading.Reading -= minValue;
+                var minValue = readings.Select(x => x.Reading).Min();
+                foreach (var reading in readings)
+                {
+                    reading.Reading -= minValue;
+                }
             }
         }
 
