@@ -12,7 +12,7 @@ bool PressureSensor::Initialise()
         return false;
     }
 
-    _ads.startADCReading(ADS1X15_REG_CONFIG_MUX_SINGLE_0, /*continuous=*/true);
+    _ads.startADCReading(ADS1X15_REG_CONFIG_MUX_DIFF_0_1, /*continuous=*/true);
     Serial.println("PressureSensor ready!");
 
     return true;
@@ -20,5 +20,7 @@ bool PressureSensor::Initialise()
 
 int PressureSensor::GetReading()
 {
-    return _ads.getLastConversionResults();
+    auto reading = abs(_ads.getLastConversionResults());
+    Serial.println("Reading: " + String(reading));
+    return reading;
 }

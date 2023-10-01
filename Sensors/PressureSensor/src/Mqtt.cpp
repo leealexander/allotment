@@ -7,7 +7,7 @@
 
 PubSubClient g_mqttClient(g_wifiClient);
 int g_readingCount = 1;
-bool g_readAllTheTime = false;
+bool g_readAllTheTime = true;
 String g_waterPressureTopic = "water-pressure";
 String g_waterPressureCommandTopic = g_waterPressureTopic + "/command";
 

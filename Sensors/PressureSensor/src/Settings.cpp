@@ -16,7 +16,7 @@ void saveMqttSettingsToPreferences(const MqttDetails &mqtt)
     g_preferences.putString("BUsername", mqtt.Username.c_str());
     g_preferences.putString("BPassword", mqtt.Password.c_str());
     g_preferences.putString("BBaseTopic", mqtt.BaseTopic.c_str());
-    g_preferences.putBool("BReadAllTime", mqtt.ReadAllTheTime);
+    g_preferences.putBool("BReadAllTime2", mqtt.ReadAllTheTime);
 
     g_preferences.end();
 }
@@ -32,7 +32,7 @@ MqttDetails const  loadMqttSettingsFromPreferences()
     settings.Username = g_preferences.getString("BUsername", "");
     settings.Password = g_preferences.getString("BPassword", "");
     settings.BaseTopic = g_preferences.getString("BBaseTopic", "");
-    settings.ReadAllTheTime = g_preferences.getBool("BReadAllTime", false);
+    settings.ReadAllTheTime = g_preferences.getBool("BReadAllTime2", true);
 
     g_preferences.end();
 
