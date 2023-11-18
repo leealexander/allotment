@@ -27,7 +27,10 @@ namespace Allotment.Pages
         public IEnumerable<WaterLevelReadingModel> Readings { get; set; } = Enumerable.Empty<WaterLevelReadingModel>();
         public HtmlString GraphLabels { get; set; } = HtmlString.Empty;
         public HtmlString GraphPressureReadings { get; set; } = HtmlString.Empty;
+        public HtmlString GraphHeightReadings { get; set; } = HtmlString.Empty;
+
         public bool IsWaterSensorOn { get; private set; }
+        public int MinReading { get; set; }
 
         [BindProperty]
         public string? KnownReadings { get; set; }
@@ -42,8 +45,8 @@ namespace Allotment.Pages
         {
             var levels = await _knownLevelStore.GetAsync();
             KnownReadings = JsonSerializer.Serialize(levels, new JsonSerializerOptions { WriteIndented = true });
-            Readings = await _waterLevelStore.GetReadingsAsync();
-            LevelReadings(Readings);
+            Readings = await _waterLevelStore.GetReadingsAsync(TimeSpan.FromHours(24));
+            MinReading = Readings.Select(x => x.Reading).Min();
             DateTime? lastDate = null;
             GraphLabels = new HtmlString(string.Join(',', Readings.Select(x =>
             {
@@ -60,7 +63,8 @@ namespace Allotment.Pages
 
                 return $"'{annotation}{dateLabel}'";
             })));
-            GraphPressureReadings = new HtmlString(string.Join(',', Readings.Select(x => $"{x.Reading}")));
+            GraphPressureReadings = new HtmlString(string.Join(',', Readings.Select(x => $"{x.Reading - MinReading}")));
+            GraphHeightReadings = new HtmlString("");
             IsWaterSensorOn = _machineControlService.IsWaterLevelSensorOn;
         }
 

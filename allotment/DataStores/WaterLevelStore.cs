@@ -9,7 +9,7 @@ namespace Allotment.DataStores
 {
     public interface IWaterLevelStore
     {
-        Task<ICollection<WaterLevelReadingModel>> GetReadingsAsync();
+        Task<ICollection<WaterLevelReadingModel>> GetReadingsAsync(TimeSpan howFarback);
         Task StoreReadingAsync(WaterLevelReadingModel details);
     }
 
@@ -27,13 +27,13 @@ namespace Allotment.DataStores
             _auditLogger = auditLogger;
         }
 
-        public async Task<ICollection<WaterLevelReadingModel>> GetReadingsAsync()
+        public async Task<ICollection<WaterLevelReadingModel>> GetReadingsAsync(TimeSpan howFarback)
         {
             var readings = new List<WaterLevelReadingModel>();
             var fileName = GetFilename();
             if (File.Exists(fileName))
             {
-                var after = DateTime.UtcNow.AddHours(-24);
+                var after = DateTime.UtcNow - howFarback;
                 var allReadings = from fl in await File.ReadAllLinesAsync(fileName)
                                let split = fl.Split(',')
                                where split.Length >= 3

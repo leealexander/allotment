@@ -62,18 +62,18 @@
             data: {
                 labels: [@Model.GraphLabels],
                 datasets: [{
-                    label: 'Pressure',
+                    label: 'Pressure (+@(Model.MinReading))',
                     borderColor: "#bae755",
                     data: [@Model.GraphPressureReadings],
+                }, {
+                    label: 'Height X 10',
+                    borderColor: "#493f27",
+                    data: [@Model.GraphHeightReadings],
                 }
                 ]
             },
             options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
+
             }
         });
     </script>

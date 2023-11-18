@@ -1,6 +1,5 @@
 #include <FS.h> 
 #include <Arduino.h>
-#include <EasyButton.h>
 #include <time.h>
 #include <Mqtt.h>
 #include <vector>
@@ -26,7 +25,7 @@ constexpr int READY_PIN = 3;
 #define IRAM_ATTR
 #endif
 
-EasyButton g_resetButton(FLASH_PIN);
+//EasyButton g_resetButton(FLASH_PIN);
 
 
 void reset() 
@@ -47,8 +46,8 @@ void setup()
 {
   Serial.begin(9600);
   
-  g_resetButton.onPressed(reset);
-  g_resetButton.begin();
+  // g_resetButton.onPressed(reset);
+  // g_resetButton.begin();
 
   initialiseWifi();
   
@@ -85,7 +84,7 @@ bool ShouldCycleSleep()
 
 void loop() 
 {
-  g_resetButton.read();
+  //g_resetButton.read();
 
   if(ShouldCycleSleep())
   {
@@ -94,10 +93,7 @@ void loop()
   
   ProcessSubscriptions();
 
-  if(!ShouldTakeReading())
-  {
-    return;
-  }
+
   
   const int maxReadings = 20;
   const int minReadingsCount = 12;
