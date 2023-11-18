@@ -18,7 +18,7 @@ String ConvertMessageRawToString(byte* messageRaw, unsigned int length)
     for (int i = 0; i < length; i++) 
     {
         message += (char)messageRaw[i];
-    }
+    } 
 
     return message;
 }
@@ -93,7 +93,8 @@ void receiveMessageCallback(char* topicRaw, byte* messageRaw, unsigned int lengt
     }
 }
 
-bool CheckAndConnectMqtt()
+int g_retryCount = 0;
+void CheckAndConnectMqtt()
 {
     while(!g_mqttClient.connected())
     {
@@ -102,28 +103,29 @@ bool CheckAndConnectMqtt()
         if (g_mqttClient.connect("PressureSensor",settings.Username.c_str(), settings.Password.c_str())) 
         {
             Serial.println("mqtt Connected");
+            g_retryCount = 0;
 
             auto subCommand = settings.BaseTopic + g_waterPressureCommandTopic;
             if(g_mqttClient.subscribe( (subCommand).c_str()))
             {
                 Serial.println("Subscribed to topic: " + subCommand);
+                return;
             }
-            else
-            {
-                Serial.println("Failed to Subscribe to topic: " + subCommand);
-            }
-            return true;
-        } 
-        else 
-        {
-            Serial.print("mqtt Connection failed: ");
-            Serial.println(g_mqttClient.state());
-            Serial.println("retying in 5 secs...");
-            delay(5000);
-        }
-    }
 
-  return g_mqttClient.connected();
+            Serial.println("Failed to Subscribe to topic: " + subCommand);
+        }
+
+        if(g_retryCount++ == 3)
+        {
+            Serial.println("Giving up connecting to Mqtt");
+            ESP.restart();
+            return;
+        }
+        Serial.print("mqtt Connection failed: ");
+        Serial.println(g_mqttClient.state());
+        Serial.println("retying in 5 secs...count=" + g_retryCount);
+        delay(5000);
+    }
 }
 
 void ProcessSubscriptions()
@@ -165,7 +167,8 @@ bool PostReading(int reading)
     auto message = "time=" + String(getTime()) + ", Pressure=" + String(reading);
     auto settings = loadMqttSettingsFromPreferences();
     auto topic = settings.BaseTopic +  g_waterPressureTopic;
-    auto sent = CheckAndConnectMqtt() && g_mqttClient.publish( topic.c_str(), message.c_str(), /*retained*/ true);
+    CheckAndConnectMqtt();
+    auto sent = g_mqttClient.publish( topic.c_str(), message.c_str(), /*retained*/ true);
     if(sent)
     {
         Serial.println("Posted value");
@@ -173,7 +176,7 @@ bool PostReading(int reading)
     }
     else
     {
-        Serial.println("Failed to post value");
+        Serial.println("Failed to post value, restarting ESP32");
        ESP.restart();
     }
 

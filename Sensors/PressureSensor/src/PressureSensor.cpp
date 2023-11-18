@@ -20,8 +20,7 @@ bool PressureSensor::Initialise()
 
 int PressureSensor::GetReading()
 {
-    auto reading = _ads.getLastConversionResults();
+    auto reading = abs(_ads.getLastConversionResults());
     Serial.println("Reading: " + String(reading));
-
     return reading;
 }
