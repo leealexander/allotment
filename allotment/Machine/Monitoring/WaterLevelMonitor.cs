@@ -22,7 +22,7 @@ namespace Allotment.Machine.Monitoring
             try
             {
                 //  We don't want to measure when water is being drawn as this could effect the reading
-                await _auditLogger.AuditLogAsync("Checking water level...");
+                await _auditLogger.AuditLogAsync("Checking water level V2...");
                 if (_machineService.IsWaterOn)
                 {
                     await _auditLogger.AuditLogAsync("Water is already on so waiting 30secs...");
