@@ -1,10 +1,8 @@
 ﻿using Allotment.DataStores;
 using Allotment.Jobs;
 using Allotment.Machine.Models;
-using Allotment.Machine.Monitoring.Models;
 using Allotment.Machine.Readers;
 using Allotment.Services;
-using System.Collections.Concurrent;
 
 namespace Allotment.Machine
 {
@@ -28,13 +26,10 @@ namespace Allotment.Machine
 
     public class MachineControlService : IMachineControlService
     {
-        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private readonly IMachine _machine;
         private readonly IJobManager _jobManager;
         private readonly ITempStore _tempStore;
         private readonly ISettingsStore _settingsStore;
-        private readonly IWaterLevelStore _waterLevelStore;
-        private readonly IAuditLogger<MachineControlService> _auditLogger;
         private readonly IWaterLevelService _waterLevelService;
         private readonly IServiceProvider _serviceProvider;
         private TimeSpan _waterOnDuration;
@@ -47,8 +42,6 @@ namespace Allotment.Machine
             , IJobManager jobManager
             , ITempStore tempStore
             , ISettingsStore settingsStore
-            , IWaterLevelStore waterLevelStore
-            , IAuditLogger<MachineControlService> auditLogger
             , IWaterLevelService waterLevelService
             , IServiceProvider serviceProvider)
         {
@@ -56,8 +49,6 @@ namespace Allotment.Machine
             _jobManager = jobManager;
             _tempStore = tempStore;
             _settingsStore = settingsStore;
-            _waterLevelStore = waterLevelStore;
-            _auditLogger = auditLogger;
             _waterLevelService = waterLevelService;
             _serviceProvider = serviceProvider;
         }
@@ -119,6 +110,7 @@ namespace Allotment.Machine
                 _waterLevelSensorOffCancellation.Cancel();
                 _waterLevelSensorOffCancellation.Dispose();
             }
+            _waterLevelSensorOffCancellation = new CancellationTokenSource();
 
             var scope = _serviceProvider.CreateScope();
             var reader = scope.ServiceProvider.GetRequiredService<IPressureReader>();
@@ -129,7 +121,6 @@ namespace Allotment.Machine
             await _machine.WaterLevelSensorPowerOnAsync();
 
 
-            _waterLevelSensorOffCancellation = new CancellationTokenSource();
             _jobManager.RunJobIn(async ctx =>
             {
                 try
