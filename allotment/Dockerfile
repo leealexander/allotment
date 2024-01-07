@@ -1,7 +1,7 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 #-bullseye-slim-arm32v7
 ARG IMAGE_TAG_APPEND= 
-FROM mcr.microsoft.com/dotnet/aspnet:7.0$IMAGE_TAG_APPEND AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0$IMAGE_TAG_APPEND AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443

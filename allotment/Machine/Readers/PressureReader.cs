@@ -49,7 +49,7 @@ namespace Allotment.Machine.Readers
             var mqttClientOptions = new MqttClientOptionsBuilder()
                     .WithTcpServer("9e2c992521034d659a18ceb2c1fa09b7.s2.eu.hivemq.cloud", 8883)
                     .WithCredentials("allotment", "REW3ake!gbc6dra@baq")
-                    .WithTls()
+                    .WithTlsOptions(new MqttClientTlsOptions { UseTls = true })
             .Build();
 
             _mqttClient.ApplicationMessageReceivedAsync += e =>
