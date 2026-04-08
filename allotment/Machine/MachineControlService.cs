@@ -73,7 +73,7 @@ namespace Allotment.Machine
                 };
                 try
                 {
-                    _machine.TryGetTempDetailsAsync(x => status.Temp = x);
+                    status.Temp = _tempStore.Current;
                     var doors = status.DoorsClosing ? "Doors closing" : "";
                     if (string.IsNullOrWhiteSpace(doors))
                     {

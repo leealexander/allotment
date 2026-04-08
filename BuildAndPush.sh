@@ -1,8 +1,8 @@
-#!/bin/bash 
+#!/bin/bash
 set -e # stop on error
-docker build    \
-    --build-arg IMAGE_TAG_APPEND="-bullseye-slim-arm32v7" \
+docker buildx build \
+    --platform linux/arm/v7 \
     -t leepaulalexander/allotment:latest \
     -f ./allotment/Dockerfile \
+    --push \
     .
-docker push leepaulalexander/allotment:latest

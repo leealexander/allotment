@@ -1,21 +1,20 @@
 ﻿using Allotment.DataStores;
 using Allotment.Jobs;
+using Allotment.Services;
 
 namespace Allotment.Machine
 {
     public class AutoPilot : IJobService
     {
         private readonly ISettingsStore _settingsStore;
-        private readonly ITempStore _tempStore;
-        private readonly ISolarStore _solarStore;
+        private readonly ICurrentTempService _currentTempService;
         private readonly IMachine _machine;
         private readonly IAuditLogger<AutoPilot> _auditLogger;
 
-        public AutoPilot(ISettingsStore settingsStore, ITempStore tempStore, ISolarStore solarStore, IMachine machine, IAuditLogger<AutoPilot> auditLogger)
+        public AutoPilot(ISettingsStore settingsStore, ICurrentTempService currentTempService, IMachine machine, IAuditLogger<AutoPilot> auditLogger)
         {
             _settingsStore = settingsStore;
-            _tempStore = tempStore;
-            _solarStore = solarStore;
+            _currentTempService = currentTempService;
             _machine = machine;
             _auditLogger = auditLogger;
         }
@@ -25,7 +24,7 @@ namespace Allotment.Machine
             var settings = (await _settingsStore.GetAsync()).Autopilot;
             if (settings.Enabled)
             {
-                var temp = await GetTempAsync();
+                var temp = await _currentTempService.GetCurrentTempCelsiusAsync();
                 _auditLogger.LogInformation($"Running AutoPilot temp={temp}");
                 if (temp != null)
                 {
@@ -56,24 +55,5 @@ namespace Allotment.Machine
             ctx.RunAgainIn(TimeSpan.FromSeconds(10));
         }
 
-        private async Task<int?> GetTempAsync()
-        {
-            int? reading = null;
-            var currentReading = _tempStore.Current;
-            if (currentReading == null || (DateTime.UtcNow - currentReading.TimeTakenUtc) > TimeSpan.FromMinutes(10))
-            {
-                var solarReading = await _solarStore.GetCurrentReadingAsync();
-                if(solarReading != null)
-                {
-                    reading = (int)solarReading.Battery.Temperature;
-                }
-            }
-            else
-            {
-                reading = (int)currentReading.Temperature.Value;
-            }
-
-            return reading;
-        }
     }
 }

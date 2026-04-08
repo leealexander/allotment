@@ -1,28 +1,25 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
-#-bullseye-slim-arm32v7
-ARG IMAGE_TAG_APPEND= 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0$IMAGE_TAG_APPEND AS base
+
+# Runtime image - arm32v7
+FROM --platform=linux/arm/v7 mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
-RUN apt update && apt install tzdata -y
+RUN apt update && apt install tzdata -y && rm -rf /var/lib/apt/lists/*
 RUN apt-get update && apt-get install -y procps && rm -rf /var/lib/apt/lists/*
-ENV TZ="Europe/London" 
+ENV TZ="Europe/London"
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+# Build on native host platform for speed (cross-compile for arm32v7)
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 COPY ["allotment/allotment.csproj", "allotment/"]
-RUN dotnet restore "allotment/allotment.csproj"
+RUN dotnet restore "allotment/allotment.csproj" -r linux-arm
 COPY . .
 WORKDIR "/src/allotment"
-RUN dotnet build "allotment.csproj" -c Release -o /app/build
+RUN dotnet publish "allotment.csproj" -c Release -r linux-arm --no-self-contained -o /app/publish
 
-FROM build AS publish
-RUN dotnet publish "allotment.csproj" -c Release -o /app/publish
-RUN apt update
-RUN apt-get install -y procps && rm -rf /var/lib/apt/lists/*
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "allotment.dll"]
 #ENTRYPOINT ["tail", "-f", "/dev/null"]
