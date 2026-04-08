@@ -5,9 +5,9 @@
 <ul class="navbar-nav">
 @if (User.Identity?.IsAuthenticated == true)
 {
-        <span class="navbar-text text-dark">Hello @User.Identity?.Name!</span>
+        <span class="navbar-text">Hello @User.Identity?.Name!</span>
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">Sign out</a>
+            <a class="nav-link" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">Sign out</a>
         </li>
 }
 else
@@ -15,7 +15,7 @@ else
         <li class="nav-item">
         @if (Configuration.Auth.AuthenticationEnabled)
         {
-            <a class="nav-link text-dark" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn">Sign in</a>
+            <a class="nav-link" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn">Sign in</a>
         }
         else
         {

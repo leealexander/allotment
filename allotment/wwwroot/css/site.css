@@ -1,67 +1,405 @@
+/* ============================================================
+   CSS Custom Properties — Allotment theme
+   ============================================================ */
+:root {
+    --color-brand:        #2d6a4f;
+    --color-brand-dark:   #1b4332;
+    --color-brand-mid:    #40916c;
+    --color-brand-light:  #74c69d;
+    --color-brand-xlight: #d8f3dc;
+    --color-sun:          #f4a261;
+    --color-water:        #48cae4;
+    --color-water-dark:   #0077b6;
+    --color-bg:           #f4f7f4;
+    --color-surface:      #ffffff;
+    --color-surface-alt:  #eef4ef;
+    --color-border:       #c8dfc9;
+    --color-text:         #1a2e1c;
+    --color-text-muted:   #5a7a5c;
+    --color-danger:       #e63946;
+    --radius-sm:  6px;
+    --radius-md:  10px;
+    --radius-lg:  16px;
+    --shadow-sm:  0 1px 3px rgba(0,0,0,.10);
+    --shadow-md:  0 4px 12px rgba(0,0,0,.12);
+    --font-sans:  'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
 html {
-  font-size: 14px;
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+    html { font-size: 16px; }
 }
 
 body {
     margin-bottom: 60px;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
 }
 
-.running svg{
+a { color: var(--color-brand); }
+a:hover { color: var(--color-brand-mid); }
+
+/* ============================================================
+   Navbar
+   ============================================================ */
+.navbar-dark-green {
+    background-color: var(--color-brand-dark) !important;
+    border-bottom: 3px solid var(--color-brand) !important;
+    box-shadow: var(--shadow-md);
+}
+
+.navbar-dark-green .navbar-brand {
+    color: #fff !important;
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: 0.02em;
+}
+
+.navbar-dark-green .nav-link {
+    color: rgba(255,255,255,.82) !important;
+    font-size: 0.95rem;
+    padding: 0.45rem 0.8rem;
+    border-radius: var(--radius-sm);
+    transition: background-color .15s, color .15s;
+}
+
+.navbar-dark-green .nav-link:hover,
+.navbar-dark-green .nav-link.active {
+    color: #fff !important;
+    background-color: var(--color-brand);
+}
+
+.navbar-dark-green .navbar-toggler {
+    border-color: rgba(255,255,255,.3);
+}
+
+.navbar-dark-green .navbar-toggler-icon {
+    filter: invert(1);
+}
+
+.navbar-dark-green .navbar-text {
+    color: rgba(255,255,255,.75) !important;
+}
+
+/* ============================================================
+   Page title
+   ============================================================ */
+.page-title {
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: var(--color-brand-dark);
+    margin-bottom: 1.25rem;
+    border-left: 4px solid var(--color-brand);
+    padding-left: 0.75rem;
+}
+
+/* ============================================================
+   Dashboard cards
+   ============================================================ */
+.dash-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+    padding: 1.1rem 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.dash-card-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+    margin-bottom: 0.25rem;
+}
+
+.dash-card-value {
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--color-brand-dark);
+    line-height: 1.1;
+}
+
+.dash-card--temp     { border-top: 3px solid var(--color-sun); }
+.dash-card--humidity { border-top: 3px solid var(--color-water); }
+.dash-card--time     { border-top: 3px solid var(--color-brand-light); }
+
+/* status metric flex row */
+.status-metrics {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+}
+
+.status-metrics .dash-card {
+    flex: 1 1 150px;
+    margin-bottom: 0;
+}
+
+/* ============================================================
+   Chart wrapper
+   ============================================================ */
+.chart-wrapper {
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.chart-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-brand-dark);
+    border-left: 3px solid var(--color-brand-light);
+    padding-left: 0.55rem;
+}
+
+/* ============================================================
+   Sidebar (Index page)
+   ============================================================ */
+.sidebar {
+    background: var(--color-brand-xlight) !important;
+    border-right: 1px solid var(--color-border);
+}
+
+.sidebar .nav-item { margin-bottom: 0.15rem; }
+
+.sidebar .btn-link {
+    color: var(--color-brand-dark) !important;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-sm);
+    width: 100%;
+    text-align: left;
+    transition: background-color .15s, color .15s;
+    text-decoration: none !important;
+}
+
+.sidebar .btn-link:hover {
+    background-color: var(--color-brand-mid);
+    color: #fff !important;
+}
+
+.sidebar .btn-link:hover svg path,
+.sidebar .btn-link:hover svg rect,
+.sidebar .btn-link:hover svg polygon {
+    fill: #fff;
+}
+
+.sidebar .btn-link svg path,
+.sidebar .btn-link svg rect,
+.sidebar .btn-link svg polygon {
+    fill: var(--color-brand);
+    transition: fill .15s;
+}
+
+.sidebar-divider {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: 0.5rem 0.75rem;
+}
+
+/* ============================================================
+   Running animation — PRESERVED
+   ============================================================ */
+.running svg {
     animation: pulsate 2s linear infinite;
 }
 
 @keyframes pulsate {
-    0% {
-        transform: scale(1);
-    }
-
-    20% {
-        transform: scale(1.2);
-    }
-
-    40% {
-        transform: scale(1.4);
-    }
-
-    60% {
-        transform: scale(1.6);
-    }
-
-    80% {
-        transform: scale(1.4);
-    }
-
-    100% {
-        transform: scale(1);
-    }
+    0%   { transform: scale(1);   }
+    20%  { transform: scale(1.2); }
+    40%  { transform: scale(1.4); }
+    60%  { transform: scale(1.6); }
+    80%  { transform: scale(1.4); }
+    100% { transform: scale(1);   }
 }
 
+/* ============================================================
+   Barrel widget — class names PRESERVED, visuals enhanced
+   ============================================================ */
 .barrel {
-    background: #ddd;
+    background: linear-gradient(to bottom, #c8dfc9, #a8c5aa);
     width: 100px;
     border-radius: 30px 30px 6px 6px;
     height: 200px;
     padding: 6px;
-    box-shadow: 3px 3px 3px #efefef;
+    box-shadow: 3px 3px 8px rgba(0,0,0,.18);
     margin-bottom: 4px;
+    border: 2px solid var(--color-border);
 }
 
 .water-level {
-    background: blue;
+    background: linear-gradient(to bottom, var(--color-water), var(--color-water-dark));
     width: 87px;
     margin-top: 5px;
-    height: 190px; /*190px; full*/
+    height: 190px;
     z-index: 1;
     border-radius: 28px 28px 10px 10px;
+    transition: height .6s ease, margin-top .6s ease;
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+.btn-primary {
+    background-color: var(--color-brand) !important;
+    border-color: var(--color-brand-dark) !important;
+    color: #fff !important;
+    border-radius: var(--radius-sm);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--color-brand-mid) !important;
+    border-color: var(--color-brand) !important;
+}
+
+.btn-secondary {
+    background-color: var(--color-surface-alt) !important;
+    border-color: var(--color-border) !important;
+    color: var(--color-brand-dark) !important;
+    border-radius: var(--radius-sm);
+}
+
+.btn-secondary:hover {
+    background-color: var(--color-brand-xlight) !important;
+}
+
+.btn-outline-secondary {
+    border-color: var(--color-border) !important;
+    color: var(--color-text-muted) !important;
+    border-radius: var(--radius-sm);
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--color-brand-xlight) !important;
+    color: var(--color-brand-dark) !important;
+    border-color: var(--color-brand-light) !important;
+}
+
+/* ============================================================
+   Form controls
+   ============================================================ */
+.form-control {
+    border-color: var(--color-border);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    font-size: 0.92rem;
+}
+
+.form-control:focus {
+    border-color: var(--color-brand-mid);
+    box-shadow: 0 0 0 0.2rem rgba(64, 145, 108, 0.25);
+}
+
+/* ============================================================
+   Tables
+   ============================================================ */
+.table {
+    --bs-table-striped-bg: var(--color-surface-alt);
+    --bs-table-hover-bg: var(--color-brand-xlight);
+    border-color: var(--color-border);
+}
+
+.table thead th {
+    background-color: var(--color-brand-dark);
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: none;
+}
+
+.table tbody td {
+    border-color: var(--color-border);
+    vertical-align: middle;
+    font-size: 0.92rem;
+}
+
+/* ============================================================
+   List groups (Solar page)
+   ============================================================ */
+.list-group-item {
+    border-color: var(--color-border);
+    background-color: var(--color-surface);
+    color: var(--color-text);
+}
+
+.list-group-item:nth-child(odd) {
+    background-color: var(--color-surface-alt);
+}
+
+.list-group-numbered > .list-group-item::before {
+    color: var(--color-brand);
+    font-weight: 700;
+}
+
+.badge.bg-primary {
+    background-color: var(--color-brand) !important;
+}
+
+.badge-health-good { background-color: var(--color-brand-mid); color: #fff; }
+.badge-health-warn { background-color: var(--color-sun); color: #1a2e1c; }
+.badge-health-bad  { background-color: var(--color-danger); color: #fff; }
+
+/* ============================================================
+   Footer
+   ============================================================ */
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px;
+    background-color: var(--color-brand-dark);
+    color: rgba(255,255,255,.65);
+    font-size: 0.82rem;
+    padding: 0 1rem;
+}
+
+.footer a {
+    color: var(--color-brand-light);
+}
+
+.footer a:hover {
+    color: #fff;
+}
+
+/* ============================================================
+   Bootstrap Datepicker override
+   ============================================================ */
+.datepicker table tr td.active,
+.datepicker table tr td.active:hover,
+.datepicker table tr td.today,
+.datepicker table tr td.today:hover {
+    background-color: var(--color-brand) !important;
+    background-image: none !important;
+    border-color: var(--color-brand-dark) !important;
+    color: #fff !important;
 }

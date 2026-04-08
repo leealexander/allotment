@@ -1,142 +1,133 @@
-﻿@page
+@page
 @model Allotment.Pages.SolarModel
 @{
     ViewData["Title"] = "Solar Details";
 }
 
-<h1>@ViewData["Title"]</h1>
+<h1 class="page-title">@ViewData["Title"]</h1>
 
-<canvas class="my-4 w-100 chartjs-render-monitor" id="myChart" style="display: block; width: 2085px; height: 880px;" width="2085" height="880"></canvas>
+<div class="chart-wrapper">
+    <div class="chart-header">
+        <span class="chart-title">Solar Output Over Time</span>
+    </div>
+    <canvas class="w-100" id="myChart"></canvas>
+</div>
 
-
-<div class="container">
-    <div class="row">
-        <div class="col">
-            <h3>Device Status</h3>
-            <ol class="list-group list-group-numbered">
-                <li class="list-group-item d-flex justify-content-between align-items-start">
-                    <div class="ms-2 me-auto">
-                        <div class="fw-bold">Charge</div>
-                        @Model.LastReading.DeviceStatus.Charge.Description
-                    </div>
-                    <span class="badge bg-primary rounded-pill">@Model.LastReading.DeviceStatus.Charge.Health</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-start">
-                    <div class="ms-2 me-auto">
-                        <div class="fw-bold">Battery</div>
-                        @Model.LastReading.DeviceStatus.Battery.Description
-                    </div>
-                    <span class="badge bg-primary rounded-pill">@Model.LastReading.DeviceStatus.Battery.Health</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-start">
-                    <div class="ms-2 me-auto">
-                        <div class="fw-bold">Load</div>
-                        @Model.LastReading.DeviceStatus.Load.Description
-                    </div>
-                    <span class="badge bg-primary rounded-pill">@Model.LastReading.DeviceStatus.Load.Health</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-start">
-                    <div class="ms-2 me-auto">
-                        <div class="fw-bold">Controller</div>
-                        @Model.LastReading.DeviceStatus.Controller.Description
-                    </div>
-                    <span class="badge bg-primary rounded-pill">@Model.LastReading.DeviceStatus.Controller.Health</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-start">
-                    <div class="ms-2 me-auto">
-                        <div class="fw-bold">Solar panel</div>
-                        @Model.LastReading.DeviceStatus.SolarPanel.Description
-                    </div>
-                    <span class="badge bg-primary rounded-pill">@Model.LastReading.DeviceStatus.SolarPanel.Health</span>
-                </li>
-            </ol>
-        </div>
-        <div class="col">
-            <h3>Battery</h3>
-            <ol class="list-group list-group-numbered">
-                <li class="list-group-item d-flex justify-content-between align-items-start">
-                    <div class="ms-2 me-auto">
-                        <div class="fw-bold">Voltage</div>
-                        @(Model.LastReading.Battery.Voltage)v
-                    </div>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-start">
-                    <div class="ms-2 me-auto">
-                        <div class="fw-bold">Current</div>
-                        @(Model.LastReading.Battery.Current)amps
-                    </div>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-start">
-                    <div class="ms-2 me-auto">
-                        <div class="fw-bold">Temperature</div>
-                        @(Model.LastReading.Battery.Temperature)c
-                    </div>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-start">
-                    <div class="ms-2 me-auto">
-                        <div class="fw-bold">SOC</div>
-                        @(Model.LastReading.Battery.StateOfCharge)
-                    </div>
-                </li>
-            </ol>
+<div class="row g-3 mb-3">
+    <div class="col-lg-6">
+        <div class="dash-card">
+            <h3 class="chart-title mb-3">Device Status</h3>
+            <div class="list-group list-group-flush">
+                <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                    <div><div class="fw-semibold">Charge</div><small class="text-muted">@Model.LastReading.DeviceStatus.Charge.Description</small></div>
+                    <span class="badge badge-health-good rounded-pill">@Model.LastReading.DeviceStatus.Charge.Health</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                    <div><div class="fw-semibold">Battery</div><small class="text-muted">@Model.LastReading.DeviceStatus.Battery.Description</small></div>
+                    <span class="badge badge-health-good rounded-pill">@Model.LastReading.DeviceStatus.Battery.Health</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                    <div><div class="fw-semibold">Load</div><small class="text-muted">@Model.LastReading.DeviceStatus.Load.Description</small></div>
+                    <span class="badge badge-health-good rounded-pill">@Model.LastReading.DeviceStatus.Load.Health</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                    <div><div class="fw-semibold">Controller</div><small class="text-muted">@Model.LastReading.DeviceStatus.Controller.Description</small></div>
+                    <span class="badge badge-health-good rounded-pill">@Model.LastReading.DeviceStatus.Controller.Health</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                    <div><div class="fw-semibold">Solar Panel</div><small class="text-muted">@Model.LastReading.DeviceStatus.SolarPanel.Description</small></div>
+                    <span class="badge badge-health-good rounded-pill">@Model.LastReading.DeviceStatus.SolarPanel.Health</span>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="row .g-3">
-        <div class="col">
-            <h3>Load</h3>
-            <ol class="list-group list-group-numbered">
-                <li class="list-group-item d-flex justify-content-between align-items-start">
-                    <div class="ms-2 me-auto">
-                        <div class="fw-bold">Voltage</div>
-                        @(Model.LastReading.Load.Voltage)v
+    <div class="col-lg-6">
+        <div class="dash-card">
+            <h3 class="chart-title mb-3">Battery</h3>
+            <div class="row g-2">
+                <div class="col-6">
+                    <div class="dash-card p-2 mb-0" style="border-top: 3px solid var(--color-sun);">
+                        <div class="dash-card-title">Voltage</div>
+                        <div class="dash-card-value fs-4">@(Model.LastReading.Battery.Voltage)<span style="font-size:.9rem; color:var(--color-text-muted)">v</span></div>
                     </div>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-start">
-                    <div class="ms-2 me-auto">
-                        <div class="fw-bold">Current</div>
-                        @(Model.LastReading.Load.Current)amps
+                </div>
+                <div class="col-6">
+                    <div class="dash-card p-2 mb-0" style="border-top: 3px solid var(--color-brand-light);">
+                        <div class="dash-card-title">Current</div>
+                        <div class="dash-card-value fs-4">@(Model.LastReading.Battery.Current)<span style="font-size:.9rem; color:var(--color-text-muted)">A</span></div>
                     </div>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-start">
-                    <div class="ms-2 me-auto">
-                        <div class="fw-bold">Watts</div>
-                        @(Model.LastReading.Load.Watts)watts
+                </div>
+                <div class="col-6">
+                    <div class="dash-card p-2 mb-0" style="border-top: 3px solid var(--color-water);">
+                        <div class="dash-card-title">Temperature</div>
+                        <div class="dash-card-value fs-4">@(Model.LastReading.Battery.Temperature)<span style="font-size:.9rem; color:var(--color-text-muted)">°C</span></div>
                     </div>
-                </li>
-            </ol>
-        </div>
-        <div class="col">
-            <h3 >Solar Panel</h3>
-            <ol class="list-group list-group-numbered">
-                <li class="list-group-item d-flex justify-content-between align-items-start">
-                    <div class="ms-2 me-auto">
-                        <div class="fw-bold">Voltage</div>
-                        @(Model.LastReading.SolarPanel.Voltage)v
+                </div>
+                <div class="col-6">
+                    <div class="dash-card p-2 mb-0" style="border-top: 3px solid var(--color-brand);">
+                        <div class="dash-card-title">State of Charge</div>
+                        <div class="dash-card-value fs-4">@(Model.LastReading.Battery.StateOfCharge)<span style="font-size:.9rem; color:var(--color-text-muted)">%</span></div>
                     </div>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-start">
-                    <div class="ms-2 me-auto">
-                        <div class="fw-bold">Current</div>
-                        @(Model.LastReading.SolarPanel.Current)amps
-                    </div>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-start">
-                    <div class="ms-2 me-auto">
-                        <div class="fw-bold">Watts</div>
-                        @(Model.LastReading.SolarPanel.Watts)watts
-                    </div>
-                </li>
-            </ol>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<h6 class="p-3">
-Taken on: @(Model.LastReading.DateTakenUtc.ToString()) utc
-</h6>
+<div class="row g-3 mb-3">
+    <div class="col-lg-6">
+        <div class="dash-card">
+            <h3 class="chart-title mb-3">Load</h3>
+            <div class="row g-2">
+                <div class="col-4">
+                    <div class="dash-card p-2 mb-0">
+                        <div class="dash-card-title">Voltage</div>
+                        <div class="dash-card-value fs-5">@(Model.LastReading.Load.Voltage)<span style="font-size:.85rem; color:var(--color-text-muted)">v</span></div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="dash-card p-2 mb-0">
+                        <div class="dash-card-title">Current</div>
+                        <div class="dash-card-value fs-5">@(Model.LastReading.Load.Current)<span style="font-size:.85rem; color:var(--color-text-muted)">A</span></div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="dash-card p-2 mb-0">
+                        <div class="dash-card-title">Watts</div>
+                        <div class="dash-card-value fs-5">@(Model.LastReading.Load.Watts)<span style="font-size:.85rem; color:var(--color-text-muted)">W</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="dash-card">
+            <h3 class="chart-title mb-3">Solar Panel</h3>
+            <div class="row g-2">
+                <div class="col-4">
+                    <div class="dash-card p-2 mb-0">
+                        <div class="dash-card-title">Voltage</div>
+                        <div class="dash-card-value fs-5">@(Model.LastReading.SolarPanel.Voltage)<span style="font-size:.85rem; color:var(--color-text-muted)">v</span></div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="dash-card p-2 mb-0">
+                        <div class="dash-card-title">Current</div>
+                        <div class="dash-card-value fs-5">@(Model.LastReading.SolarPanel.Current)<span style="font-size:.85rem; color:var(--color-text-muted)">A</span></div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="dash-card p-2 mb-0">
+                        <div class="dash-card-title">Watts</div>
+                        <div class="dash-card-value fs-5">@(Model.LastReading.SolarPanel.Watts)<span style="font-size:.85rem; color:var(--color-text-muted)">W</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-
-
+<p class="text-muted small px-1">Last reading: @(Model.LastReading.DateTakenUtc.ToString("yyyy-MM-dd HH:mm")) UTC</p>
 
 @section scripts
     {
@@ -149,22 +140,28 @@ Taken on: @(Model.LastReading.DateTakenUtc.ToString()) utc
                 datasets: [{
                     label: 'Solar W (*10 scale)',
                     borderColor: "#bae755",
+                    backgroundColor: "rgba(186,231,85,0.08)",
                     data: [@(await Model.GetSolarWattageByHourAsync())],
                 }, {
                     label: 'Solar V (*10 scale)',
                     borderColor: "#9255e7",
-                data: [@(await Model.GetSolarVoltageByHourAsync())],
+                    backgroundColor: "rgba(146,85,231,0.08)",
+                    data: [@(await Model.GetSolarVoltageByHourAsync())],
                 }, {
                     label: 'State of Charge',
                     borderColor: "#493f27",
+                    backgroundColor: "rgba(73,63,39,0.08)",
                     data: [@(await Model.GetBatterySocByHourAsync())],
                 }]
             },
             options: {
+                responsive: true,
+                plugins: {
+                    legend: { labels: { color: '#1a2e1c', font: { size: 13 } } }
+                },
                 scales: {
-                    y: {
-                        beginAtZero: true
-                    }
+                    y: { beginAtZero: true, grid: { color: '#c8dfc9' }, ticks: { color: '#5a7a5c' } },
+                    x: { grid: { color: '#c8dfc9' }, ticks: { color: '#5a7a5c' } }
                 }
             }
         });
