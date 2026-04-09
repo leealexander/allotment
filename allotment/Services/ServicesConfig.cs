@@ -6,6 +6,7 @@
         {
             services.AddTransient<IWaterLevelService, WaterLevelService>();
             services.AddTransient<ICurrentTempService, CurrentTempService>();
+            services.AddSingleton<IVersionService, VersionService>();
             return services;
         }
     }

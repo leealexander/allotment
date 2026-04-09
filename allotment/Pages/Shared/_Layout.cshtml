@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+@inject Allotment.Services.IVersionService VersionService
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -53,8 +54,9 @@
     </div>
 
     <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2022 - allotment - <a asp-area="" asp-page="/Privacy">Privacy</a>
+        <div class="container d-flex justify-content-between align-items-center">
+            <span>&copy; 2022 - allotment - <a asp-area="" asp-page="/Privacy">Privacy</a></span>
+            <span class="small font-monospace opacity-50" title="Build commit">@VersionService.CommitHash</span>
         </div>
     </footer>
 

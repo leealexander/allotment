@@ -144,3 +144,4 @@ _NCrunch*
 /Play2/EpeverReader/.vs/EpeverReader/FileContentIndex/4522ea03-be54-4c1f-965c-b4ef1632aaec.vsidx
 /Play2/EpeverReader/.vs/EpeverReader/FileContentIndex/1034dd5b-efeb-45fd-abec-82827be84f49.vsidx
 docker
+mqtt_monitor.py

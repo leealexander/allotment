@@ -11,12 +11,13 @@ ENV TZ="Europe/London"
 
 # Build on native host platform for speed (cross-compile for arm32v7)
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+ARG GIT_COMMIT=unknown
 WORKDIR /src
 COPY ["allotment/allotment.csproj", "allotment/"]
 RUN dotnet restore "allotment/allotment.csproj" -r linux-arm
 COPY . .
 WORKDIR "/src/allotment"
-RUN dotnet publish "allotment.csproj" -c Release -r linux-arm --no-self-contained -o /app/publish
+RUN dotnet publish "allotment.csproj" -c Release -r linux-arm --no-self-contained -o /app/publish -p:SourceRevisionId=$GIT_COMMIT
 
 FROM base AS final
 WORKDIR /app
