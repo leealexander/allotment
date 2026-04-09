@@ -41,6 +41,7 @@ namespace Allotment.Machine.Monitoring
                 }
                 else
                 {
+                    _logger.LogWarning("No temperature reading available (DHT22 and solar both failed), retrying in 10s");
                     ctx.RunAgainIn(TimeSpan.FromSeconds(10));
                     return;
                 }
