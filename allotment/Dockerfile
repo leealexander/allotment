@@ -6,7 +6,7 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 RUN apt update && apt install tzdata -y && rm -rf /var/lib/apt/lists/*
-RUN apt-get update && apt-get install -y procps libgpiod2 && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y procps libgpiod2t64 && rm -rf /var/lib/apt/lists/*
 ENV TZ="Europe/London"
 
 # Build on native host platform for speed (cross-compile for arm32v7)
