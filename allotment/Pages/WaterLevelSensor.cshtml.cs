@@ -46,7 +46,7 @@ namespace Allotment.Pages
             var levels = await _knownLevelStore.GetAsync();
             KnownReadings = JsonSerializer.Serialize(levels, new JsonSerializerOptions { WriteIndented = true });
             Readings = await _waterLevelStore.GetReadingsAsync(TimeSpan.FromHours(24));
-            MinReading = Readings.Select(x => x.Reading).Min();
+            MinReading = Readings.Any() ? Readings.Select(x => x.Reading).Min() : 0;
             DateTime? lastDate = null;
             GraphLabels = new HtmlString(string.Join(',', Readings.Select(x =>
             {
