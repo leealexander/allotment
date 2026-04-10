@@ -35,3 +35,21 @@ jobs:
           tags: leepaulalexander/allotment:latest
           build-args: |
             GIT_COMMIT=${{ github.sha }}
+
+  notify-success:
+    needs: build
+    if: success()
+    uses: leealexander/.github/.github/workflows/telegram-notify.yml@main
+    with:
+      status: success
+      message: "Build succeeded — leealexander/allotment"
+    secrets: inherit
+
+  notify-failure:
+    needs: build
+    if: failure()
+    uses: leealexander/.github/.github/workflows/telegram-notify.yml@main
+    with:
+      status: failure
+      message: "Build failed — leealexander/allotment"
+    secrets: inherit
