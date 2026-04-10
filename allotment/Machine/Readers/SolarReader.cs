@@ -31,6 +31,8 @@ namespace Allotment.Machine
                 serialPort.DataBits = 8;
                 serialPort.StopBits = StopBits.One;
                 serialPort.Parity = Parity.None;
+                serialPort.ReadTimeout = 5000;
+                serialPort.WriteTimeout = 5000;
                 serialPort.Open();
 
                 var factory = new ModbusFactory();
