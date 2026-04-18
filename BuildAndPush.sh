@@ -2,6 +2,7 @@
 set -e # stop on error
 GIT_COMMIT=$(git rev-parse --short HEAD)
 echo "Building with commit: $GIT_COMMIT"
+podman machine ssh -- sudo podman run --rm --privileged multiarch/qemu-user-static --reset -p yes
 podman build \
     --platform linux/arm/v7 \
     -t leepaulalexander/allotment:latest \
