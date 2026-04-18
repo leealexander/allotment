@@ -14,20 +14,25 @@ namespace allotment.Pages
         private readonly ITempStore _tempStore;
         private readonly IMachineControlService _machineControlService;
         private readonly ISettingsStore _settingsStore;
+        private readonly ISolarStore _solarStore;
 
-        public IndexModel(ILogger<IndexModel> logger, ITempStore tempStore, IMachineControlService machineControlService, ISettingsStore settingsStore)
+        public IndexModel(ILogger<IndexModel> logger, ITempStore tempStore, IMachineControlService machineControlService, ISettingsStore settingsStore, ISolarStore solarStore)
         {
             _logger = logger;
-            _tempStore = tempStore; 
+            _tempStore = tempStore;
             _machineControlService = machineControlService;
             _settingsStore = settingsStore;
+            _solarStore = solarStore;
         }
 
         public async Task OnGetAsync()
         {
             var readings = _tempStore.ReadingsByHour.ToArray();
             TempByHour = new HtmlString(string.Join(',', readings.Select(x => $"'{x?.Temperature.DegreesCelsius.ToString() ?? "null"}'")));
-            HumidityByHour = new HtmlString(string.Join(',', readings.Select(x => $"'{x?.Humidity.Percent.ToString() ?? "null"}'")));
+
+            var solarReadings = await _solarStore.GetReadingsByHourAsync();
+            BatteryChargeByHour = new HtmlString(string.Join(',', solarReadings.Select(x => x?.Battery?.StateOfCharge > 0 ? $"'{x.Battery.StateOfCharge}'" : "null")));
+            SolarWattsByHour = new HtmlString(string.Join(',', solarReadings.Select(x => x?.SolarPanel?.Watts > 0 ? $"'{x.SolarPanel.Watts:F1}'" : "null")));
 
             var settings = await _settingsStore.GetAsync();
             AutopilotEnabled = settings.Autopilot.Enabled;
@@ -40,7 +45,8 @@ namespace allotment.Pages
         public HtmlString Labels => new HtmlString(string.Join(',',Enumerable.Range(0, 24).Select(x => $"'{x:D2}'")));
 
         public HtmlString TempByHour { get; set; } = HtmlString.Empty;
-        public HtmlString HumidityByHour { get; set; } = HtmlString.Empty;
+        public HtmlString BatteryChargeByHour { get; set; } = HtmlString.Empty;
+        public HtmlString SolarWattsByHour { get; set; } = HtmlString.Empty;
 
         [BindProperty]
         public bool AutopilotEnabled { get; set; }

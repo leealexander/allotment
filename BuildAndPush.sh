@@ -2,10 +2,10 @@
 set -e # stop on error
 GIT_COMMIT=$(git rev-parse --short HEAD)
 echo "Building with commit: $GIT_COMMIT"
-docker buildx build \
+podman build \
     --platform linux/arm/v7 \
     -t leepaulalexander/allotment:latest \
     -f ./allotment/Dockerfile \
     --build-arg GIT_COMMIT=$GIT_COMMIT \
-    --push \
     .
+podman push leepaulalexander/allotment:latest

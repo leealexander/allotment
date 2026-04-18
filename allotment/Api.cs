@@ -9,16 +9,18 @@ namespace Allotment
     {
         public static IEndpointRouteBuilder AddAllotmentApi(this IEndpointRouteBuilder route)
         {
-            route.MapGet("/api/status", (IMachineControlService service) =>
+            route.MapGet("/api/status", async (IMachineControlService service, ISolarStore solarStore) =>
             {
                 var status = service.Status;
+                var solar = await solarStore.GetCurrentReadingAsync();
 
                 return Results.Ok(new
                 {
                     GeneralStatus = service.Status.Textual,
                     TakenAt = status.Temp == null ? "No readings available" : status.Temp.TimeTakenUtc.ToLocalTime().ToString(),
                     Temp = status.Temp == null ? "Unknown" : status.Temp.Temperature.ToString(),
-                    Humidity = status.Temp == null ? "Unknown" : status.Temp.Humidity.ToString(),
+                    BatteryCharge = solar == null ? "—" : $"{solar.Battery.StateOfCharge}%",
+                    SolarWatts = solar == null ? "—" : $"{solar.SolarPanel.Watts:F1}W",
                     DoorsOpening = status.DoorsOpening,
                     DoorsClosing = status.DoorsClosing,
                     WaterOn = status.WaterOn

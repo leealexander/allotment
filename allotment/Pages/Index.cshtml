@@ -94,15 +94,19 @@
                 <div class="dash-card-title">Temperature (°C)</div>
                 <div class="dash-card-value" id="temp">—</div>
             </div>
-            <div class="dash-card dash-card--humidity">
-                <div class="dash-card-title">Humidity (%)</div>
-                <div class="dash-card-value" id="humidity">—</div>
+            <div class="dash-card dash-card--battery">
+                <div class="dash-card-title">Battery Charge</div>
+                <div class="dash-card-value" id="battery-charge">—</div>
+            </div>
+            <div class="dash-card dash-card--solar">
+                <div class="dash-card-title">Solar</div>
+                <div class="dash-card-value" id="solar-watts">—</div>
             </div>
         </div>
 
         <div class="chart-wrapper">
             <div class="chart-header">
-                <span class="chart-title">Historical — Temperature &amp; Humidity</span>
+                <span class="chart-title">Historical — Temperature, Battery &amp; Solar</span>
                 <div class="d-flex gap-2">
                     <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
                     <button type="button" class="btn btn-sm btn-outline-secondary">
@@ -132,15 +136,23 @@
             data: {
                 labels: [@Model.Labels],
                 datasets: [{
-                    label: 'Temp',
+                    label: 'Temp (°C)',
                     borderColor: "#bae755",
                     backgroundColor: "rgba(186,231,85,0.08)",
                     data: [@Model.TempByHour],
+                    yAxisID: 'y',
                 }, {
-                    label: 'Humidity',
+                    label: 'Battery (%)',
                     borderColor: "#9255e7",
                     backgroundColor: "rgba(146,85,231,0.08)",
-                    data: [@Model.HumidityByHour],
+                    data: [@Model.BatteryChargeByHour],
+                    yAxisID: 'y',
+                }, {
+                    label: 'Solar (W)',
+                    borderColor: "#e7a255",
+                    backgroundColor: "rgba(231,162,85,0.08)",
+                    data: [@Model.SolarWattsByHour],
+                    yAxisID: 'y1',
                 }]
             },
             options: {
@@ -149,7 +161,8 @@
                     legend: { labels: { color: '#1a2e1c', font: { size: 13 } } }
                 },
                 scales: {
-                    y: { beginAtZero: true, grid: { color: '#c8dfc9' }, ticks: { color: '#5a7a5c' } },
+                    y: { beginAtZero: true, grid: { color: '#c8dfc9' }, ticks: { color: '#5a7a5c' }, position: 'left' },
+                    y1: { beginAtZero: true, grid: { drawOnChartArea: false }, ticks: { color: '#e7a255' }, position: 'right', title: { display: true, text: 'Solar (W)', color: '#e7a255' } },
                     x: { grid: { color: '#c8dfc9' }, ticks: { color: '#5a7a5c' } }
                 }
             }
@@ -178,7 +191,8 @@
                         return {
                             takenAt: errorMessage,
                             temp: "Unknown",
-                            humidity: "Unknown",
+                            batteryCharge: "—",
+                            solarWatts: "—",
                             generalStatus: errorMessage,
                             doorsOpening: false,
                             doorsClosing: false,
@@ -193,7 +207,8 @@
                 .then(data => {
                     document.getElementById('taken-at').innerText = data.takenAt;
                     document.getElementById('temp').innerText = data.temp;
-                    document.getElementById('humidity').innerText = data.humidity;
+                    document.getElementById('battery-charge').innerText = data.batteryCharge;
+                    document.getElementById('solar-watts').innerText = data.solarWatts;
                     document.getElementById('status').innerText = data.generalStatus;
                     setRunning('doors-open', data.doorsOpening);
                     setRunning('doors-close', data.doorsClosing);
