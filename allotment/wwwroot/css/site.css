@@ -134,6 +134,12 @@ a:hover { color: var(--color-brand-mid); }
 .dash-card--humidity { border-top: 3px solid var(--color-water); }
 .dash-card--time     { border-top: 3px solid var(--color-brand-light); }
 
+.dash-card-ago {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    margin-top: 0.2rem;
+}
+
 /* status metric flex row */
 .status-metrics {
     display: flex;

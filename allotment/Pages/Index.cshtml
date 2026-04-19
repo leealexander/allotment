@@ -172,13 +172,10 @@
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
         <h2 class="chart-title mb-3" style="border-left:none; font-size:1.1rem;">Current Status</h2>
         <div class="status-metrics">
-            <div class="dash-card dash-card--time">
-                <div class="dash-card-title">Last reading</div>
-                <div class="dash-card-value fs-6 fw-semibold" id="taken-at">waiting...</div>
-            </div>
             <div class="dash-card dash-card--temp">
                 <div class="dash-card-title">Temperature (°C)</div>
                 <div class="dash-card-value" id="temp">—</div>
+                <div class="dash-card-ago" id="electrical-ago"></div>
             </div>
             <div class="dash-card dash-card--battery">
                 <div class="dash-card-title">Battery Charge</div>
@@ -187,6 +184,10 @@
             <div class="dash-card dash-card--solar">
                 <div class="dash-card-title">Solar</div>
                 <div class="dash-card-value" id="solar-watts">—</div>
+            </div>
+            <div class="dash-card dash-card--time">
+                <div class="dash-card-title">Water Level</div>
+                <div class="dash-card-value fs-6 fw-semibold" id="water-ago">—</div>
             </div>
         </div>
 
@@ -262,6 +263,19 @@
     <script>
         var pollTime = 3000;
         var errorTime = 1000;
+
+        function timeAgo(isoString) {
+            if (!isoString) return '—';
+            var secs = Math.floor((Date.now() - new Date(isoString)) / 1000);
+            if (secs < 60) return 'just now';
+            var mins = Math.floor(secs / 60);
+            if (mins < 60) return mins + ' min' + (mins === 1 ? '' : 's') + ' ago';
+            var hrs = Math.floor(mins / 60);
+            if (hrs < 24) return hrs + ' hr' + (hrs === 1 ? '' : 's') + ' ago';
+            var days = Math.floor(hrs / 24);
+            return days + ' day' + (days === 1 ? '' : 's') + ' ago';
+        }
+
         function setRunning(action, running) {
             document.querySelectorAll('[data-action="' + action + '"]').forEach(function(e) {
                 if (running) e.classList.add("running");
@@ -269,39 +283,40 @@
             });
         }
 
+        var lastData = null;
+
+        function tickAgo() {
+            if (lastData) {
+                document.getElementById('electrical-ago').innerText = timeAgo(lastData.electricalTakenAtUtc);
+                document.getElementById('water-ago').innerText = timeAgo(lastData.waterTakenAtUtc);
+            }
+            window.setTimeout(tickAgo, 30000);
+        }
+
         function updateState() {
             fetch('/api/status')
                 .then(response => {
                     if (!response.ok) {
                         window.setTimeout(updateState, errorTime);
-                        var errorMessage = "Network error";
-                        return {
-                            takenAt: errorMessage,
-                            temp: "Unknown",
-                            batteryCharge: "—",
-                            solarWatts: "—",
-                            generalStatus: errorMessage,
-                            doorsOpening: false,
-                            doorsClosing: false,
-                            waterOn: false
-                        }
+                        return { temp: "Unknown", batteryCharge: "—", solarWatts: "—", generalStatus: "Network error", doorsOpening: false, doorsClosing: false, waterOn: false };
                     }
-                    else {
-                        window.setTimeout(updateState, pollTime)
-                    }
-                    return response.json()
+                    window.setTimeout(updateState, pollTime);
+                    return response.json();
                 })
                 .then(data => {
-                    document.getElementById('taken-at').innerText = data.takenAt;
+                    lastData = data;
                     document.getElementById('temp').innerText = data.temp;
                     document.getElementById('battery-charge').innerText = data.batteryCharge;
                     document.getElementById('solar-watts').innerText = data.solarWatts;
                     document.getElementById('status').innerText = data.generalStatus;
+                    document.getElementById('electrical-ago').innerText = timeAgo(data.electricalTakenAtUtc);
+                    document.getElementById('water-ago').innerText = timeAgo(data.waterTakenAtUtc);
                     setRunning('doors-open', data.doorsOpening);
                     setRunning('doors-close', data.doorsClosing);
                     setRunning('water-on', data.waterOn);
                 });
         }
-        window.setTimeout(updateState, 10)
+        window.setTimeout(updateState, 10);
+        window.setTimeout(tickAgo, 30000);
     </script>
     }
