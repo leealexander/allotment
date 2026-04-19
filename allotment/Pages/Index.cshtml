@@ -3,13 +3,101 @@
 @{
     ViewData["Title"] = "Home page V4";
 }
-<h1 class="page-title">Polytunnel Control <small class="text-muted fw-normal fs-5">@Model.MachineTitle</small></h1>
+
+@* Mobile offcanvas controls drawer *@
+<div class="offcanvas offcanvas-start" tabindex="-1" id="controlsOffcanvas" aria-labelledby="controlsOffcanvasLabel">
+    <div class="offcanvas-header" style="background: var(--color-brand-xlight); border-bottom: 1px solid var(--color-border);">
+        <h5 class="offcanvas-title fw-semibold" id="controlsOffcanvasLabel" style="color: var(--color-brand-dark);">Controls</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body" style="background: var(--color-brand-xlight);">
+        <ul class="nav flex-column">
+            <li data-action="doors-open" class="nav-item">
+                <form asp-page-handler="DoorsOpen" method="post">
+                    <button class="btn btn-link text-decoration-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="feather feather-file align-text-bottom" aria-hidden="true"><path d="m20.68,1l-16.36,0c-0.36,0 -0.65,0.25 -0.65,0.56l0,8.4l0.9,0c-0.27,-0.3 -0.42,-0.66 -0.42,-1.04c0,-0.45 0.21,-0.88 0.58,-1.2c0.08,-0.07 0.16,-0.12 0.25,-0.18l0,-5.42l15.05,0l0,0.4l-6.87,4.29l0,18.35l6.91,-4.31c0.09,0.22 0.33,0.38 0.62,0.38c0.36,0 0.65,-0.25 0.65,-0.56l0,-19.11c0,-0.31 -0.29,-0.56 -0.65,-0.56zm-4.93,15.42c-0.31,0 -0.57,-0.33 -0.63,-0.77l-0.74,0l0,-0.49l0.75,0c0.08,-0.41 0.33,-0.71 0.62,-0.71c0.36,0 0.65,0.44 0.65,0.99c0,0.54 -0.29,0.99 -0.65,0.99zm-11.02,-0.81c0.08,0.07 0.16,0.12 0.25,0.18l0,4.89c0,0.31 -0.29,0.56 -0.65,0.56c-0.36,0 -0.65,-0.25 -0.65,-0.56l0,-7.32l0.9,0c-0.6,0.67 -0.55,1.63 0.16,2.24zm4.68,-4.46c0.26,0.22 0.26,0.59 0,0.81l-3.19,2.74c-0.13,0.11 -0.3,0.17 -0.47,0.17c-0.17,0 -0.34,-0.06 -0.47,-0.17c-0.26,-0.22 -0.26,-0.59 0,-0.81l2.05,-1.76l-6.64,0c-0.37,0 -0.67,-0.26 -0.67,-0.57c0,-0.32 0.3,-0.57 0.67,-0.57l6.64,0l-2.05,-1.76c-0.26,-0.22 -0.26,-0.59 0,-0.81c0.26,-0.22 0.68,-0.22 0.94,0l3.19,2.74z" fill="#007fff" id="svg_1" /></svg>
+                        Open
+                    </button>
+                </form>
+            </li>
+            <li data-action="doors-close" class="nav-item">
+                <form asp-page-handler="DoorsClose" method="post">
+                    <button class="btn btn-link text-decoration-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="feather feather-file align-text-bottom" aria-hidden="true"><path d="m19.15,1.82l-14.29,0l0,20.36l14.29,0.02l0,-20.39l0,0zm-1.34,19.04l-11.6,-0.02l0,-8.11l0.46,0l0,7.68l10.69,0l0,-7.68l0.46,0l0,8.13l0,0zm-9.93,-8.83c0,-0.43 0.35,-0.78 0.78,-0.78c0.43,0 0.78,0.35 0.78,0.78s-0.35,0.78 -0.78,0.78c-0.43,0 -0.78,-0.35 -0.78,-0.78zm9.93,-0.74l-0.46,0l0,-7.68l-10.69,0l0,7.68l-0.46,0l0,-8.13l11.6,0l0,8.13l0,0z" fill="#007fff" /></svg>
+                        Close
+                    </button>
+                </form>
+            </li>
+            <li data-action="water-on" class="nav-item">
+                <form asp-page-handler="waterOn" method="post">
+                    <button class="btn btn-link text-decoration-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="feather feather-file align-text-bottom" aria-hidden="true">
+                            <path d="m16.3,10.83c-0.08,-0.62 -0.28,-1.2 -0.58,-1.71l-3.86,-7.45l-3.86,7.45l0,0c-0.3,0.51 -0.5,1.09 -0.58,1.71l0,0c-0.01,0.08 -0.02,0.17 -0.02,0.26c0,0.01 0,0.01 0,0.02c-0.01,0.09 -0.01,0.18 -0.01,0.27c0,2.47 2,4.47 4.47,4.47c2.47,0 4.47,-2 4.47,-4.47c0,-0.09 0,-0.18 -0.01,-0.27c0,-0.01 0,-0.01 0,-0.02c-0.01,-0.09 -0.01,-0.17 -0.02,-0.26l0,0l0,0z" fill="#007fff" id="svg_2" />
+                            <path d="m6.38,16.49c0.12,-0.08 0.15,-0.25 0.07,-0.37c-0.08,-0.12 -0.25,-0.15 -0.37,-0.07c-0.53,0.36 -0.81,0.76 -0.81,1.2c0,1.58 3.39,2.43 6.59,2.43c3.19,0 6.59,-0.85 6.59,-2.43c0,-0.4 -0.23,-0.78 -0.69,-1.12c-0.12,-0.09 -0.29,-0.06 -0.37,0.06c-0.09,0.12 -0.06,0.29 0.06,0.37c0.22,0.16 0.48,0.41 0.48,0.69c0,0.9 -2.49,1.9 -6.05,1.9c-3.57,0 -6.05,-1 -6.05,-1.9c0,-0.31 0.31,-0.58 0.57,-0.76" fill="#007fff" id="svg_3" />
+                            <path d="m20.27,15.07c-0.14,-0.06 -0.29,0.01 -0.35,0.15c-0.06,0.14 0.01,0.29 0.15,0.35c1.53,0.62 2.37,1.39 2.37,2.14c0,1.67 -4.25,3.45 -10.58,3.45c-6.33,0 -10.58,-1.78 -10.58,-3.45c0,-0.78 0.89,-1.56 2.52,-2.2c0.14,-0.05 0.21,-0.21 0.15,-0.35c-0.05,-0.14 -0.21,-0.21 -0.35,-0.15c-1.87,0.73 -2.86,1.66 -2.86,2.69c0,2.23 4.88,3.98 11.12,3.98c6.23,0 11.11,-1.75 11.11,-3.98c0,-1 -0.94,-1.91 -2.71,-2.64" fill="#007fff" id="svg_1" />
+                        </svg>
+                        Water on
+                    </button>
+                </form>
+            </li>
+            <li class="nav-item">
+                <form asp-page-handler="waterOff" method="post">
+                    <button class="btn btn-link text-decoration-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="feather feather-file align-text-bottom" aria-hidden="true"><path d="m18.37,18.25l-5.88,-5.88l-9.2,-9.2l-1.62,1.63l4.23,4.23c-0.98,1.85 -1.68,3.72 -1.68,5.26c0,4.21 3.42,7.64 7.64,7.64c1.91,0 3.69,-0.73 5.04,-1.91l3.35,3.35l1.62,-1.62l-3.49,-3.49m1.12,-3.97c0,-5.09 -7.64,-13.75 -7.64,-13.75c0,0 -1.69,1.92 -3.48,4.48l10.94,10.94c0.11,-0.53 0.18,-1.09 0.18,-1.67z" fill="#007fff" /></svg>
+                        Water off
+                    </button>
+                </form>
+            </li>
+            <li><hr class="sidebar-divider"></li>
+            <li class="nav-item">
+                <form asp-page-handler="stopAll" method="post">
+                    <button class="btn btn-link text-decoration-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="feather feather-file align-text-bottom" aria-hidden="true"><path d="m11.76,0c-6.48,0 -11.76,5.28 -11.76,11.76s5.28,11.76 11.76,11.76s11.76,-5.28 11.76,-11.76s-5.28,-11.76 -11.76,-11.76zm-9.61,11.76c0,-5.3 4.31,-9.61 9.61,-9.61c2.39,0 4.57,0.88 6.25,2.32l-13.54,13.54c-1.45,-1.68 -2.32,-3.87 -2.32,-6.25zm9.61,9.61c-2.14,0 -4.11,-0.7 -5.71,-1.88l13.43,-13.43c1.18,1.59 1.88,3.57 1.88,5.7c0,5.29 -4.31,9.61 -9.61,9.61z" fill="#007fff" id="svg_2"/></svg>
+                        Stop all
+                    </button>
+                </form>
+            </li>
+            <li class="nav-item">
+                <form asp-page-handler="downloadData" method="post">
+                    <button class="btn btn-link text-decoration-none">
+                        <svg version="1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 48 48" enable-background="new 0 0 48 48">
+                            <g fill="#007fff">
+                                <polygon points="24,37.1 13,24 35,24" />
+                                <rect x="20" y="4" width="8" height="4" />
+                                <rect x="20" y="10" width="8" height="4" />
+                                <rect x="20" y="16" width="8" height="11" />
+                                <rect x="6" y="40" width="36" height="4" />
+                            </g>
+                        </svg>
+                        Data
+                    </button>
+                </form>
+            </li>
+        </ul>
+        <div class="mt-3">
+            <vc:water-level/>
+        </div>
+        <form class="mt-3 d-flex align-items-center" asp-page-handler="toggleAutoPilot" method="post">
+            <input type="checkbox" asp-for="@Model.AutopilotEnabled" data-toggle="toggle" onChange="this.form.submit()" />
+            <label asp-for="@Model.AutopilotEnabled" class="ms-2 fw-semibold" style="color: var(--color-brand-dark);">Autopilot</label>
+        </form>
+    </div>
+</div>
+
+<div class="d-flex align-items-center justify-content-between mb-2">
+    <h1 class="page-title mb-0">Polytunnel Control <small class="text-muted fw-normal fs-5">@Model.MachineTitle</small></h1>
+    <button class="btn btn-sm d-md-none"
+            style="background: var(--color-brand); color: #fff; border-radius: var(--radius-sm);"
+            type="button" data-bs-toggle="offcanvas" data-bs-target="#controlsOffcanvas" aria-controls="controlsOffcanvas">
+        &#9776; Controls
+    </button>
+</div>
 
 <div class="row">
-    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar">
+    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-none d-md-block sidebar">
         <div class="position-sticky pt-3">
             <ul class="nav flex-column">
-                <li id="doors-open" class="nav-item">
+                <li data-action="doors-open" class="nav-item">
                     <form asp-page-handler="DoorsOpen" method="post">
                         <button class="btn btn-link text-decoration-none">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="feather feather-file align-text-bottom" aria-hidden="true"><path d="m20.68,1l-16.36,0c-0.36,0 -0.65,0.25 -0.65,0.56l0,8.4l0.9,0c-0.27,-0.3 -0.42,-0.66 -0.42,-1.04c0,-0.45 0.21,-0.88 0.58,-1.2c0.08,-0.07 0.16,-0.12 0.25,-0.18l0,-5.42l15.05,0l0,0.4l-6.87,4.29l0,18.35l6.91,-4.31c0.09,0.22 0.33,0.38 0.62,0.38c0.36,0 0.65,-0.25 0.65,-0.56l0,-19.11c0,-0.31 -0.29,-0.56 -0.65,-0.56zm-4.93,15.42c-0.31,0 -0.57,-0.33 -0.63,-0.77l-0.74,0l0,-0.49l0.75,0c0.08,-0.41 0.33,-0.71 0.62,-0.71c0.36,0 0.65,0.44 0.65,0.99c0,0.54 -0.29,0.99 -0.65,0.99zm-11.02,-0.81c0.08,0.07 0.16,0.12 0.25,0.18l0,4.89c0,0.31 -0.29,0.56 -0.65,0.56c-0.36,0 -0.65,-0.25 -0.65,-0.56l0,-7.32l0.9,0c-0.6,0.67 -0.55,1.63 0.16,2.24zm4.68,-4.46c0.26,0.22 0.26,0.59 0,0.81l-3.19,2.74c-0.13,0.11 -0.3,0.17 -0.47,0.17c-0.17,0 -0.34,-0.06 -0.47,-0.17c-0.26,-0.22 -0.26,-0.59 0,-0.81l2.05,-1.76l-6.64,0c-0.37,0 -0.67,-0.26 -0.67,-0.57c0,-0.32 0.3,-0.57 0.67,-0.57l6.64,0l-2.05,-1.76c-0.26,-0.22 -0.26,-0.59 0,-0.81c0.26,-0.22 0.68,-0.22 0.94,0l3.19,2.74z" fill="#007fff" id="svg_1" /></svg>
@@ -17,7 +105,7 @@
                         </button>
                     </form>
                 </li>
-                <li id="doors-close" class="nav-item">
+                <li data-action="doors-close" class="nav-item">
                     <form asp-page-handler="DoorsClose" method="post">
                         <button class="btn btn-link text-decoration-none">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="feather feather-file align-text-bottom" aria-hidden="true"><path d="m19.15,1.82l-14.29,0l0,20.36l14.29,0.02l0,-20.39l0,0zm-1.34,19.04l-11.6,-0.02l0,-8.11l0.46,0l0,7.68l10.69,0l0,-7.68l0.46,0l0,8.13l0,0zm-9.93,-8.83c0,-0.43 0.35,-0.78 0.78,-0.78c0.43,0 0.78,0.35 0.78,0.78s-0.35,0.78 -0.78,0.78c-0.43,0 -0.78,-0.35 -0.78,-0.78zm9.93,-0.74l-0.46,0l0,-7.68l-10.69,0l0,7.68l-0.46,0l0,-8.13l11.6,0l0,8.13l0,0z" fill="#007fff" /></svg>
@@ -25,7 +113,7 @@
                         </button>
                     </form>
                 </li>
-                <li id="water-on" class="nav-item">
+                <li data-action="water-on" class="nav-item">
                     <form asp-page-handler="waterOn" method="post">
                         <button class="btn btn-link text-decoration-none">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="feather feather-file align-text-bottom" aria-hidden="true">
@@ -37,7 +125,7 @@
                         </button>
                     </form>
                 </li>
-                <li id="water-off" class="nav-item">
+                <li class="nav-item">
                     <form asp-page-handler="waterOff" method="post">
                         <button class="btn btn-link text-decoration-none">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="feather feather-file align-text-bottom" aria-hidden="true"><path d="m18.37,18.25l-5.88,-5.88l-9.2,-9.2l-1.62,1.63l4.23,4.23c-0.98,1.85 -1.68,3.72 -1.68,5.26c0,4.21 3.42,7.64 7.64,7.64c1.91,0 3.69,-0.73 5.04,-1.91l3.35,3.35l1.62,-1.62l-3.49,-3.49m1.12,-3.97c0,-5.09 -7.64,-13.75 -7.64,-13.75c0,0 -1.69,1.92 -3.48,4.48l10.94,10.94c0.11,-0.53 0.18,-1.09 0.18,-1.67z" fill="#007fff" /></svg>
@@ -172,14 +260,11 @@
     <script>
         var pollTime = 3000;
         var errorTime = 1000;
-        function setRunning(element, running){
-            var e = document.getElementById(element);
-            if(running){
-                e.classList.add("running");
-            }
-            else{
-                e.classList.remove("running");
-            }
+        function setRunning(action, running) {
+            document.querySelectorAll('[data-action="' + action + '"]').forEach(function(e) {
+                if (running) e.classList.add("running");
+                else e.classList.remove("running");
+            });
         }
 
         function updateState() {
